@@ -107,7 +107,9 @@ p{margin:0}
 .nav-links a:hover,.nav-links a.active{color:var(--ink);border-bottom-color:var(--ink)}
 .nav-actions{display:flex;align-items:center;gap:4px;margin-left:auto}
 .nav-cta{margin-left:8px}
-.mobile-only{display:none}
+/* Shop + its categories: on desktop just the link; on mobile an expandable group */
+.nav-group,.nav-group-row{display:flex;align-items:center}
+.nav-expand,.nav-sub{display:none}
 .burger,.nav-close{display:none}
 .search-bar{max-width:var(--maxw);margin:0 auto;padding:0 32px 16px;display:flex;align-items:center;gap:10px}
 .search-bar svg{color:var(--muted);font-size:1.1rem}
@@ -337,7 +339,7 @@ a:hover .leather-panel .cat-art{transform:translate(-50%,-50%) scale(1.05)}
 .wish:hover{background:#fff;transform:scale(1.06)}
 .wish.on{color:var(--accent)}
 .wish.on svg{fill:currentColor}
-.quick-add{position:absolute;left:12px;right:12px;bottom:12px;height:42px;border:0;border-radius:0;
+.quick-add{position:absolute;left:12px;right:12px;bottom:12px;height:42px;display:flex;align-items:center;justify-content:center;border:0;border-radius:0;
   background:rgba(255,255,255,.95);font-size:.88rem;font-weight:500;cursor:pointer;z-index:1;
   opacity:0;transform:translateY(8px);transition:.25s}
 .card:hover .quick-add,.quick-add:focus-visible{opacity:1;transform:none}
@@ -710,6 +712,80 @@ form .co-title:not(:first-child){margin-top:44px}
 .footer-base{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
   margin-top:56px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12)}
 
+.footer-legal{display:flex;gap:20px;flex-wrap:wrap;font-size:.85rem}
+
+/* ============================== NOT YET LIVE (needs a backend) ============================== */
+.off-note{font-size:.82rem;color:var(--muted);margin:-20px 0 24px}
+.off-banner{padding:12px 16px;margin-bottom:22px;background:var(--sand);border-left:3px solid var(--accent);
+  font-size:.9rem;color:var(--ink-2)}
+.code-field.is-off,.stars.is-off{opacity:.45}
+.code-field button:disabled,.stars .star:disabled{cursor:not-allowed}
+.stars.is-off .star:hover{transform:none}
+.pay-fieldset{border:0;margin:0;padding:0;min-width:0}
+.pay-fieldset:disabled{opacity:.45}
+.pay-fieldset:disabled *{cursor:not-allowed}
+.btn:disabled:hover{background:var(--ink);border-color:var(--ink)}
+.btn.tan:disabled:hover{background:var(--accent);border-color:var(--accent)}
+.btn.outline:disabled:hover{background:transparent;color:var(--ink)}
+.set-card-pick:disabled{cursor:not-allowed}
+
+/* checkout gift option */
+.gift{margin-top:26px;display:flex;flex-direction:column;gap:14px}
+.gift-check{display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:500}
+.gift-check input{accent-color:var(--accent);width:18px;height:18px;margin:0}
+.gift .uline textarea{min-height:56px}
+
+/* product availability + material & size */
+.avail{font-size:.9rem;color:var(--ink-2);margin:-2px 0 6px}
+.avail.low{color:var(--accent);font-weight:500}
+.avail.out{color:var(--muted);font-weight:500}
+.specs{display:grid;grid-template-columns:auto 1fr;gap:6px 24px;margin:0;padding-bottom:18px}
+.specs dt{color:var(--muted)}
+.specs dd{margin:0;color:var(--ink-2)}
+.card-badge.out{background:var(--ink-2)}
+
+/* ============================== ORDER CONFIRMATION ============================== */
+.confirm-head{max-width:640px;margin-bottom:48px}
+.confirm-id{font-size:.88rem;color:var(--muted);margin-bottom:10px}
+.confirm-head h1{font-size:clamp(2.4rem,4.6vw,3.6rem);margin-bottom:10px}
+.next-steps{list-style:none;margin:0 0 40px;padding:0;border-top:1px solid var(--ink-2)}
+.next-steps li{display:flex;gap:18px;padding:18px 0;border-bottom:1px solid var(--line)}
+.next-steps .num{font-family:var(--serif);font-size:1.8rem;line-height:1;color:var(--accent);min-width:24px}
+.next-steps strong{display:block;font-weight:500;margin-bottom:2px}
+.confirm-cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:28px}
+.confirm-cols h3{font-family:var(--serif-text);font-size:1.15rem;font-weight:400;margin-bottom:8px}
+.confirm-cols h3.gap{margin-top:20px}
+.confirm-cols p{color:var(--ink-2)}
+.confirm-help a{text-decoration:underline;text-underline-offset:3px}
+.confirm-items{list-style:none;margin:0 0 4px;padding:6px 0 0;border-top:1px solid var(--ink-2)}
+.confirm-items li{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+
+/* ============================== POLICY PAGES ============================== */
+.policy{display:grid;grid-template-columns:200px 1fr;gap:64px;padding-top:56px;padding-bottom:24px}
+.policy-nav{display:flex;flex-direction:column;gap:2px;position:sticky;top:96px;align-self:start}
+.policy-nav a{padding:10px 0 10px 14px;border-left:2px solid var(--line);color:var(--muted)}
+.policy-nav a:hover{color:var(--ink)}
+.policy-nav a.on{border-left-color:var(--accent);color:var(--ink);font-weight:500}
+.policy-body{max-width:680px}
+.policy-body h1{font-size:clamp(2.4rem,4.4vw,3.4rem);margin-bottom:12px}
+.policy-body .lead{font-size:1.08rem;color:var(--ink-2);margin-bottom:12px}
+.policy-body h2{font-family:var(--serif-text);font-size:1.3rem;font-weight:400;margin:36px 0 10px}
+.policy-body p{color:var(--ink-2);margin-bottom:12px}
+.policy-body a{text-decoration:underline;text-underline-offset:3px}
+.fee-tables{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start}
+.fee-table{width:100%;border-collapse:collapse;font-size:.92rem}
+.fee-table caption{text-align:left;font-weight:500;padding-bottom:8px}
+.fee-table td{padding:7px 0;border-bottom:1px solid var(--line);color:var(--ink-2)}
+.fee-table td:last-child{text-align:right}
+
+/* floating WhatsApp button (bottom right) */
+.wa-float{position:fixed;right:24px;bottom:24px;z-index:35;width:56px;height:56px;display:flex;align-items:center;
+  justify-content:center;background:#25d366;color:#fff;font-size:1.75rem;border-radius:50%;
+  box-shadow:0 10px 24px -8px rgba(0,0,0,.35);transition:transform .2s,box-shadow .2s}
+.wa-float:hover{transform:translateY(-3px);box-shadow:0 14px 28px -8px rgba(0,0,0,.4)}
+.wa-float:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+@media(max-width:600px){.wa-float{right:16px;bottom:16px;width:52px;height:52px;font-size:1.6rem}}
+
 /* toasts */
 .Toastify__toast{font-family:var(--font);border-radius:0;font-size:.9rem}
 
@@ -727,13 +803,25 @@ form .co-title:not(:first-child){margin-top:44px}
   .wrap,.nav-inner,.search-bar{padding-left:20px;padding-right:20px}
   .nav-inner{gap:8px}
   .burger,.nav-close{display:inline-flex}
+  /* the blur would make the header the containing block for the fixed menu panel */
+  .header{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
   .nav-links{position:fixed;top:0;left:0;bottom:0;width:min(320px,85%);z-index:50;background:var(--bg);
+    overflow-y:auto;
     flex-direction:column;gap:0;padding:16px 24px;transform:translateX(-100%);transition:transform .3s}
-  .nav-links.show{transform:none}
+  .nav-links.show{transform:none;box-shadow:12px 0 40px -20px rgba(0,0,0,.35)}
   .nav-links a{font-size:1.15rem;padding:14px 0;border-bottom:1px solid var(--line)}
   .nav-links a:hover,.nav-links a.active{border-bottom-color:var(--line)}
   .nav-close{align-self:flex-end;margin-bottom:8px}
-  .mobile-only{display:block}
+  .nav-group{flex-direction:column;align-items:stretch}
+  .nav-group-row{border-bottom:1px solid var(--line)}
+  .nav-group-row a{flex:1;border-bottom:0}
+  .nav-expand{display:flex;align-items:center;justify-content:center;width:44px;height:44px;margin-right:-10px;
+    border:0;background:none;cursor:pointer;font-size:1.2rem;color:var(--ink-2);transition:transform .25s}
+  .nav-expand.open{transform:rotate(180deg)}
+  .nav-sub{display:flex;flex-direction:column;overflow:hidden;max-height:0;transition:max-height .3s ease}
+  .nav-sub.open{max-height:420px}
+  .nav-sub a{font-size:1rem;padding:11px 0 11px 16px;color:var(--muted)}
+  .nav-sub a:hover{color:var(--ink)}
   .pdp,.story,.co-grid,.coll-row,.coll-hero{grid-template-columns:1fr;gap:36px}
   .contact-page{padding-top:20px}
   .contact-split{grid-template-columns:1fr;min-height:0}
@@ -802,5 +890,10 @@ form .co-title:not(:first-child){margin-top:44px}
   .buy-row .icon-btn{display:none}
   .footer-grid{grid-template-columns:1fr}
   .footer-base{flex-direction:column;align-items:flex-start}
+  .policy{grid-template-columns:1fr;gap:28px;padding-top:32px}
+  .policy-nav{position:static;flex-direction:row;flex-wrap:wrap;gap:6px 16px}
+  .policy-nav a{border-left:0;padding:4px 0;border-bottom:2px solid transparent}
+  .policy-nav a.on{border-bottom-color:var(--accent)}
+  .fee-tables,.confirm-cols{grid-template-columns:1fr}
   .shop-head{flex-direction:column;gap:2px}
 }
