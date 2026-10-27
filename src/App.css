@@ -11,7 +11,7 @@
   --sand:#e5e3dd;
   --ink:#24170f;
   --ink-2:#54402f;
-  --muted:#8a7661;
+  --muted:#735f4c; /* darkest grey-brown that keeps 4.5:1 contrast on every background */
   --line:#dcd9d2;
   --accent:#9c5f27;
   --choc:#2e1d12;
@@ -49,6 +49,13 @@ p{margin:0}
 .muted{color:var(--muted)}
 .small{font-size:.85rem}
 .grow{flex:1}
+
+/* keyboard focus: a clear ring everywhere, never shown for mouse clicks */
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.skip-link{position:absolute;left:16px;top:-60px;z-index:100;padding:10px 16px;background:var(--ink);color:#fff;
+  transition:top .2s}
+.skip-link:focus{top:12px}
+main:focus{outline:none}
 
 /* ============================== BUTTONS ============================== */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
@@ -113,6 +120,7 @@ p{margin:0}
 .burger,.nav-close{display:none}
 .search-bar{max-width:var(--maxw);margin:0 auto;padding:0 32px 16px;display:flex;align-items:center;gap:10px}
 .search-bar svg{color:var(--muted);font-size:1.1rem}
+.search-bar input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
 .search-bar input{flex:1;height:48px;border:0;border-bottom:1.5px solid var(--ink);background:transparent;
   font:inherit;font-size:1.05rem;outline:none}
 
@@ -634,6 +642,7 @@ form .co-title:not(:first-child){margin-top:44px}
   padding-top:14px;margin:14px 0 18px}
 .code-field{display:flex;align-items:center;border-bottom:1px solid var(--ink-2);margin:6px 0 28px}
 .code-field input{flex:1;height:44px;border:0;background:transparent;font-size:.92rem;outline:none}
+.code-field:focus-within{border-bottom-color:var(--accent);box-shadow:0 1px 0 var(--accent)}
 .code-field button{border:0;background:none;cursor:pointer;font-size:1.2rem;padding:0 4px}
 .co-summary .btn{margin-bottom:16px}
 .cart-links{display:flex;justify-content:space-between}
@@ -778,6 +787,32 @@ form .co-title:not(:first-child){margin-top:44px}
 .fee-table td{padding:7px 0;border-bottom:1px solid var(--line);color:var(--ink-2)}
 .fee-table td:last-child{text-align:right}
 
+/* header search suggestions */
+.search-wrap{max-width:var(--maxw);margin:0 auto}
+.suggest{margin:0 32px 18px;padding:14px 0 4px;border-top:1px solid var(--line)}
+.suggest-empty{color:var(--muted);padding:6px 0 12px}
+.suggest-cats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.suggest-list{list-style:none;margin:0;padding:0}
+.suggest-list a{display:grid;grid-template-columns:48px 1fr auto;gap:14px;align-items:center;padding:8px 0}
+.suggest-list a:hover .suggest-name{color:var(--accent)}
+.suggest-thumb > *{width:48px;height:56px;object-fit:cover;display:block}
+.suggest-thumb .img-ph::after{inset:3px;border-width:1px}
+.suggest-name{display:flex;flex-direction:column;font-weight:500;line-height:1.3}
+.suggest-name small{font-weight:400;color:var(--muted);font-size:.82rem}
+.suggest-price{color:var(--ink-2);font-size:.92rem}
+.suggest-all{display:inline-flex;align-items:center;gap:6px;margin:10px 0 8px;font-weight:500;
+  text-decoration:underline;text-underline-offset:4px}
+.suggest-all:hover{color:var(--accent)}
+
+/* social icons (footer + contact page) */
+.socials{display:flex;gap:8px;margin-top:6px}
+.socials a,.socials span{width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--line);color:var(--ink-2);font-size:1rem;transition:background .2s,color .2s,border-color .2s}
+.socials a:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+.socials .social-soon{cursor:default}
+.socials.on-dark a,.socials.on-dark span{border-color:rgba(230,200,140,.3);color:#e9dcc6}
+.socials.on-dark a:hover{background:var(--gold);border-color:var(--gold);color:var(--choc)}
+
 /* floating WhatsApp button (bottom right) */
 .wa-float{position:fixed;right:24px;bottom:24px;z-index:35;width:56px;height:56px;display:flex;align-items:center;
   justify-content:center;background:#25d366;color:#fff;font-size:1.75rem;border-radius:50%;
@@ -801,14 +836,16 @@ form .co-title:not(:first-child){margin-top:44px}
 }
 @media(max-width:900px){
   .wrap,.nav-inner,.search-bar{padding-left:20px;padding-right:20px}
+  .suggest{margin-left:20px;margin-right:20px}
   .nav-inner{gap:8px}
   .burger,.nav-close{display:inline-flex}
   /* the blur would make the header the containing block for the fixed menu panel */
   .header{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
   .nav-links{position:fixed;top:0;left:0;bottom:0;width:min(320px,85%);z-index:50;background:var(--bg);
     overflow-y:auto;
-    flex-direction:column;gap:0;padding:16px 24px;transform:translateX(-100%);transition:transform .3s}
-  .nav-links.show{transform:none;box-shadow:12px 0 40px -20px rgba(0,0,0,.35)}
+    flex-direction:column;gap:0;padding:16px 24px;transform:translateX(-100%);
+    visibility:hidden;transition:transform .3s,visibility .3s}
+  .nav-links.show{transform:none;visibility:visible;box-shadow:12px 0 40px -20px rgba(0,0,0,.35)}
   .nav-links a{font-size:1.15rem;padding:14px 0;border-bottom:1px solid var(--line)}
   .nav-links a:hover,.nav-links a.active{border-bottom-color:var(--line)}
   .nav-close{align-self:flex-end;margin-bottom:8px}
