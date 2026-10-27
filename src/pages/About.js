@@ -1,7 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import usePageTitle from "../usePageTitle";
 
 const About = () => {
+  usePageTitle("Our story", "The story behind Nula Leer, handmade leather goods from Nairobi.");
   return (
     <>
       <section className="about-hero">

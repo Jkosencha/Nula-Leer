@@ -6,10 +6,12 @@ import ProductCard from "../components/ProductCard";
 import ComingSoon from "../components/ComingSoon";
 import CollectionSet from "../components/CollectionSet";
 import { SHOP_OPEN } from "../config";
+import usePageTitle from "../usePageTitle";
 
 const CollectionPage = () => {
   const { slug } = useParams();
   const collection = collections.find((c) => c.slug === slug);
+  usePageTitle(collection?.name, collection?.tagline);
   const items = useMemo(() => products.filter((p) => p.collections?.includes(slug)), [slug]);
 
   if (!collection) {

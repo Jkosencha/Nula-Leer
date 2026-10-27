@@ -8,6 +8,7 @@ import LeatherPanel from "../components/LeatherPanel";
 import Select from "../components/Select";
 import ProductImage from "../components/ProductImage";
 import CategoryArt from "../components/CategoryArt";
+import usePageTitle from "../usePageTitle";
 
 const PER_PAGE = 12;
 
@@ -75,6 +76,7 @@ const Shop = () => {
   };
 
   const current = categories.find((c) => c.slug === category);
+  usePageTitle(query ? `Search: ${query}` : current ? current.name : "Shop", current?.description);
   const inCategory = useMemo(
     () => products.filter((p) => category === "all" || p.category === category),
     [category]
