@@ -24,6 +24,14 @@ export const CONTACT = {
   whatsapp: "254704239554", // international format, no "+"; set to "" to hide WhatsApp links
 };
 
+// Social accounts. Paste each profile URL when ready; empty ones show as plain icons.
+export const SOCIAL = {
+  instagram: "",
+  tiktok: "",
+  facebook: "",
+  pinterest: "",
+};
+
 export const whatsappLink = (text = "") =>
   `https://wa.me/${CONTACT.whatsapp}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
 

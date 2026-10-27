@@ -3,6 +3,7 @@ import { FiArrowRight } from "react-icons/fi";
 import { CONTACT, DEMO, mailto, whatsappLink } from "../config";
 import { demoContactImage } from "./sampleProducts";
 import Select from "../components/Select";
+import SocialIcons from "../components/SocialIcons";
 import usePageTitle from "../usePageTitle";
 
 const TOPICS = ["General question", "Custom order", "Wholesale / collaboration", "Product enquiry"].map(
@@ -56,6 +57,8 @@ const Contact = () => {
                 )}
                 <dt>Based in</dt>
                 <dd>{CONTACT.location}</dd>
+                <dt>Follow us</dt>
+                <dd><SocialIcons /></dd>
               </dl>
             </div>
 

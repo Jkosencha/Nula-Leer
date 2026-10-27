@@ -5,13 +5,14 @@ import { FaWhatsapp } from "react-icons/fa";
 import { categories, collections } from "../pages/Products";
 import { CONTACT, SHOP_OPEN, whatsappLink } from "../config";
 import { POLICY_LINKS } from "../pages/Policy";
+import SocialIcons from "./SocialIcons";
 
 const Footer = () => (
   <footer className="footer">
     <div className="wrap footer-grid">
       <div className="footer-news">
         <Link to="/" className="brand">
-          <img src="/logo.png" alt="" />
+          <img src="/logo-small.png" alt="" width="34" height="34" />
           Nula Leer
         </Link>
         <p>Handmade leather goods from Nairobi, Kenya.</p>
@@ -50,6 +51,7 @@ const Footer = () => (
           </a>
         )}
         <span className="with-icon"><FiMapPin /> {CONTACT.location}</span>
+        <SocialIcons className="on-dark" />
       </div>
     </div>
 

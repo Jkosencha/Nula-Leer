@@ -104,7 +104,7 @@ const ProductDetails = () => {
 
       <div className="wrap pdp">
         <div className="gallery">
-          <ProductImage src={mainImage} product={product} tone={selectedColor} alt={product.name} className="main" />
+          <ProductImage src={mainImage} product={product} tone={selectedColor} alt={product.name} className="main" eager />
           {images.length > 1 && (
             <div className="thumbs">
               {images.map((img, i) => (
@@ -114,7 +114,7 @@ const ProductDetails = () => {
                   onClick={() => setMainImage(img)}
                   aria-label={`View image ${i + 1}`}
                 >
-                  <img src={img} alt="" />
+                  <img src={img} alt="" loading="lazy" decoding="async" />
                 </button>
               ))}
             </div>

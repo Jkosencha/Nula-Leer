@@ -330,7 +330,7 @@ const Shop = () => {
                   <span className="spot-price">KSh {p.price.toLocaleString()}</span>
                 </Link>
                 <Link to={`/shop?category=${p.category}`} className="spot-lifestyle" style={{ "--tone": cat?.tone }}>
-                  {lifestyle ? <img src={lifestyle} alt="" /> : <CategoryArt slug={p.category} />}
+                  {lifestyle ? <img src={lifestyle} alt="" loading="lazy" decoding="async" /> : <CategoryArt slug={p.category} />}
                   <span className="spot-label">
                     <span className="spot-cat">{cat?.name}</span>
                     <span className="spot-cta">Shop {cat?.name.toLowerCase()} <FiArrowRight /></span>
