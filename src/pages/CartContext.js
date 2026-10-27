@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { LIVE } from "../config";
 
 export const CartContext = createContext();
 
@@ -119,7 +120,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
-  const discount = COUPONS[coupon] || 0;
+  const discount = LIVE.discounts ? COUPONS[coupon] || 0 : 0;
 
   return (
     <CartContext.Provider
