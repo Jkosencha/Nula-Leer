@@ -16,6 +16,7 @@ const ProductCard = ({ product }) => {
   return (
     <article className="card">
       <div className="card-media">
+        {product.badge && <span className="card-badge">{product.badge}</span>}
         <Link to={`/productDetails/${product.id}`}>
           <ProductImage src={product.image} product={product} alt={product.name} />
           {hoverImage && <img className="alt" src={hoverImage} alt="" aria-hidden="true" />}
