@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useCart } from "./CartContext";
 import { colorNames } from "./Products";
 import CheckoutSteps from "../components/CheckoutSteps";
 import ProductImage from "../components/ProductImage";
 import DeliveryPicker, { townLabel } from "../components/DeliveryPicker";
+import { DEMO, LIVE } from "../config";
+import { createOrder, saveLastOrder } from "../orders";
+import usePageTitle from "../usePageTitle";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
@@ -17,6 +20,7 @@ const Field = ({ label, className = "", ...props }) => (
 );
 
 const Checkout = () => {
+  usePageTitle("Checkout");
   const { cartItems, shippingCost, shippingLocation, selectShipping, subtotal, discount, coupon } = useCart();
   const [step, setStep] = useState("shipping");
   const [contact, setContact] = useState({
@@ -25,6 +29,8 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("mpesa");
   const [mpesaNumber, setMpesaNumber] = useState("");
   const [card, setCard] = useState({ name: "", cardNumber: "", expiry: "", cvv: "" });
+  const [gift, setGift] = useState({ isGift: false, message: "" });
+  const navigate = useNavigate();
 
   const total = subtotal + (shippingCost || 0) - discount;
   const update = (key) => (e) => setContact({ ...contact, [key]: e.target.value });
@@ -59,10 +65,29 @@ const Checkout = () => {
     window.scrollTo(0, 0);
   };
 
+  // the order that will be sent to the backend (and shown in the admin dashboard)
+  const buildOrder = () =>
+    createOrder({
+      cartItems,
+      contact,
+      deliveryArea: townLabel(shippingLocation),
+      deliveryFee: shippingCost || 0,
+      gift,
+      paymentMethod,
+      discount,
+    });
+
   const completePurchase = (e) => {
     e.preventDefault();
+    if (!LIVE.payments) return;
     if (paymentMethod === "mpesa") handleMpesa();
     else handleCard();
+  };
+
+  // demo only: see the confirmation page with this checkout's details
+  const previewConfirmation = () => {
+    saveLastOrder(buildOrder());
+    navigate("/order/confirmation");
   };
 
   if (cartItems.length === 0) {
@@ -108,6 +133,28 @@ const Checkout = () => {
               />
             </div>
 
+            <div className="gift">
+              <label className="gift-check">
+                <input
+                  type="checkbox"
+                  checked={gift.isGift}
+                  onChange={(e) => setGift({ ...gift, isGift: e.target.checked })}
+                />
+                This order is a gift
+              </label>
+              {gift.isGift && (
+                <label className="uline">
+                  <span>Gift note (optional, we'll include it with the order)</span>
+                  <textarea
+                    rows="2"
+                    maxLength={240}
+                    value={gift.message}
+                    onChange={(e) => setGift({ ...gift, message: e.target.value })}
+                  />
+                </label>
+              )}
+            </div>
+
             <div className="co-actions">
               <button type="submit" className="btn square">Continue to payment</button>
               <Link to="/cart" className="under-link">Back to shopping cart</Link>
@@ -116,75 +163,91 @@ const Checkout = () => {
         ) : (
           <form onSubmit={completePurchase}>
             <h1 className="co-title">Payment method</h1>
-            <div className="radio-list">
-              <label className="radio">
-                <input
-                  type="radio"
-                  name="pay"
-                  checked={paymentMethod === "mpesa"}
-                  onChange={() => setPaymentMethod("mpesa")}
-                />
-                M-Pesa
-              </label>
-              <label className="radio">
-                <input
-                  type="radio"
-                  name="pay"
-                  checked={paymentMethod === "card"}
-                  onChange={() => setPaymentMethod("card")}
-                />
-                Credit or debit card
-              </label>
-            </div>
-
-            {paymentMethod === "mpesa" ? (
-              <div className="uline-grid">
-                <Field
-                  label="M-Pesa number"
-                  type="tel"
-                  placeholder="2547XXXXXXXX"
-                  value={mpesaNumber}
-                  onChange={(e) => setMpesaNumber(e.target.value)}
-                  required
-                />
-                <p className="muted small pay-note">
-                  You'll get a prompt on your phone to pay KSh {total.toLocaleString()}.
-                </p>
-              </div>
-            ) : (
-              <div className="uline-grid">
-                <Field
-                  label="Name on card"
-                  value={card.name}
-                  onChange={(e) => setCard({ ...card, name: e.target.value })}
-                  autoComplete="cc-name"
-                />
-                <Field
-                  label="Card number"
-                  inputMode="numeric"
-                  autoComplete="cc-number"
-                  value={card.cardNumber}
-                  onChange={(e) => setCard({ ...card, cardNumber: e.target.value })}
-                />
-                <Field
-                  label="Expiry date"
-                  placeholder="MM/YY"
-                  autoComplete="cc-exp"
-                  value={card.expiry}
-                  onChange={(e) => setCard({ ...card, expiry: e.target.value })}
-                />
-                <Field
-                  label="CVC"
-                  inputMode="numeric"
-                  autoComplete="cc-csc"
-                  value={card.cvv}
-                  onChange={(e) => setCard({ ...card, cvv: e.target.value })}
-                />
-              </div>
+            {!LIVE.payments && (
+              <p className="off-banner">
+                Online payment is being set up and isn't available yet. To order now, contact us
+                and we'll arrange payment with you directly.
+              </p>
             )}
+            <fieldset className="pay-fieldset" disabled={!LIVE.payments}>
+              <div className="radio-list">
+                <label className="radio">
+                  <input
+                    type="radio"
+                    name="pay"
+                    checked={paymentMethod === "mpesa"}
+                    onChange={() => setPaymentMethod("mpesa")}
+                  />
+                  M-Pesa
+                </label>
+                <label className="radio">
+                  <input
+                    type="radio"
+                    name="pay"
+                    checked={paymentMethod === "card"}
+                    onChange={() => setPaymentMethod("card")}
+                  />
+                  Credit or debit card
+                </label>
+              </div>
+
+              {paymentMethod === "mpesa" ? (
+                <div className="uline-grid">
+                  <Field
+                    label="M-Pesa number"
+                    type="tel"
+                    placeholder="2547XXXXXXXX"
+                    value={mpesaNumber}
+                    onChange={(e) => setMpesaNumber(e.target.value)}
+                    required
+                  />
+                  <p className="muted small pay-note">
+                    You'll get a prompt on your phone to pay KSh {total.toLocaleString()}.
+                  </p>
+                </div>
+              ) : (
+                <div className="uline-grid">
+                  <Field
+                    label="Name on card"
+                    value={card.name}
+                    onChange={(e) => setCard({ ...card, name: e.target.value })}
+                    autoComplete="cc-name"
+                  />
+                  <Field
+                    label="Card number"
+                    inputMode="numeric"
+                    autoComplete="cc-number"
+                    value={card.cardNumber}
+                    onChange={(e) => setCard({ ...card, cardNumber: e.target.value })}
+                  />
+                  <Field
+                    label="Expiry date"
+                    placeholder="MM/YY"
+                    autoComplete="cc-exp"
+                    value={card.expiry}
+                    onChange={(e) => setCard({ ...card, expiry: e.target.value })}
+                  />
+                  <Field
+                    label="CVC"
+                    inputMode="numeric"
+                    autoComplete="cc-csc"
+                    value={card.cvv}
+                    onChange={(e) => setCard({ ...card, cvv: e.target.value })}
+                  />
+                </div>
+              )}
+
+            </fieldset>
 
             <div className="co-actions">
-              <button type="submit" className="btn square">Complete purchase · KSh {total.toLocaleString()}</button>
+              <button type="submit" className="btn square" disabled={!LIVE.payments}>
+                Complete purchase · KSh {total.toLocaleString()}
+              </button>
+              {!LIVE.payments && DEMO && (
+                <button type="button" className="under-link" onClick={previewConfirmation}>
+                  Preview the confirmation page
+                </button>
+              )}
               <button type="button" className="under-link" onClick={() => setStep("shipping")}>
                 Back to shipping
               </button>
