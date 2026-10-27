@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
-import { FiSearch, FiHeart, FiShoppingBag, FiMenu, FiX } from "react-icons/fi";
+import { FiSearch, FiHeart, FiShoppingBag, FiMenu, FiX, FiChevronDown } from "react-icons/fi";
 import { useCart } from "../pages/CartContext";
 import { useWishlist } from "../pages/WishlistContext";
 import products, { categories } from "../pages/Products";
@@ -12,6 +12,7 @@ const Navbar = () => {
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [shopOpen, setShopOpen] = useState(false); // mobile menu: categories under "Shop"
   const [query, setQuery] = useState("");
   const searchRef = useRef(null);
   const navigate = useNavigate();
@@ -21,11 +22,20 @@ const Navbar = () => {
   useEffect(() => {
     setMenuOpen(false);
     setSearchOpen(false);
+    setShopOpen(false);
   }, [location.pathname, location.search]);
 
   useEffect(() => {
     if (searchOpen) searchRef.current?.focus();
   }, [searchOpen]);
+
+  // stop the page scrolling behind the open mobile menu
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   const submitSearch = (e) => {
     e.preventDefault();
@@ -50,10 +60,25 @@ const Navbar = () => {
           <button className="icon-btn nav-close" aria-label="Close menu" onClick={() => setMenuOpen(false)}>
             <FiX />
           </button>
-          <NavLink to="/shop" end>Shop</NavLink>
-          {categories.map((c) => (
-            <Link key={c.slug} to={`/shop?category=${c.slug}`} className="mobile-only">{c.name}</Link>
-          ))}
+          <div className="nav-group">
+            <div className="nav-group-row">
+              <NavLink to="/shop" end>Shop</NavLink>
+              <button
+                type="button"
+                className={`nav-expand ${shopOpen ? "open" : ""}`}
+                aria-expanded={shopOpen}
+                aria-label="Show shop categories"
+                onClick={() => setShopOpen((v) => !v)}
+              >
+                <FiChevronDown />
+              </button>
+            </div>
+            <div className={`nav-sub ${shopOpen ? "open" : ""}`}>
+              {categories.map((c) => (
+                <Link key={c.slug} to={`/shop?category=${c.slug}`}>{c.name}</Link>
+              ))}
+            </div>
+          </div>
           <NavLink to="/collections">Collections</NavLink>
           <NavLink to="/about">Our story</NavLink>
           <NavLink to="/contact">Contact</NavLink>
