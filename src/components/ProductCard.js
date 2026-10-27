@@ -22,7 +22,7 @@ const ProductCard = ({ product }) => {
         )}
         <Link to={`/productDetails/${product.id}`}>
           <ProductImage src={product.image} product={product} alt={product.name} />
-          {hoverImage && <img className="alt" src={hoverImage} alt="" aria-hidden="true" />}
+          {hoverImage && <img className="alt" src={hoverImage} alt="" aria-hidden="true" loading="lazy" decoding="async" />}
         </Link>
         {SHOP_OPEN && (
           <>

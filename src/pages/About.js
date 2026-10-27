@@ -17,7 +17,11 @@ const About = () => {
       </section>
 
       <section className="section wrap story">
-        <img src="/founder-heritage.jpg" alt="Jennifer Kosencha in a beaded headpiece, founder of Nula Leer" />
+        <img
+          src="/founder-heritage.jpg"
+          alt="Jennifer Kosencha in a beaded headpiece, founder of Nula Leer"
+          loading="lazy" decoding="async"
+        />
         <div>
           <h2>Jennifer Kosencha</h2>
           <p>

@@ -61,7 +61,7 @@ const Home = () => {
         <div className="type-grid">
           {categories.map((c) => (
             <Link key={c.slug} to={`/shop?category=${c.slug}`} className={`type-tile ${c.image ? "has-img" : ""}`} style={{ "--tone": c.tone }}>
-              {c.image ? <img src={c.image} alt="" /> : <CategoryArt slug={c.slug} />}
+              {c.image ? <img src={c.image} alt="" loading="lazy" decoding="async" /> : <CategoryArt slug={c.slug} />}
               <span className="type-label">
                 <span className="type-name">{c.name}</span>
                 <span className="type-cta">Shop now <FiArrowRight /></span>

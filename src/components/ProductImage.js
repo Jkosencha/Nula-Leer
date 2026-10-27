@@ -9,8 +9,8 @@ const isLight = (hex) => {
 
 // A product photo, or a leather illustration when there's no photo yet.
 // `tone` overrides the colour (e.g. the selected colour on the product page).
-const ProductImage = ({ src, product, tone, alt = "", className = "" }) => {
-  if (src) return <img src={src} alt={alt} className={className} />;
+const ProductImage = ({ src, product, tone, alt = "", className = "", eager = false }) => {
+  if (src) return <img src={src} alt={alt} className={className} loading={eager ? "eager" : "lazy"} decoding="async" />;
   const color = tone || categories.find((c) => c.slug === product.category)?.tone || "#4a2c1c";
   return (
     <div
