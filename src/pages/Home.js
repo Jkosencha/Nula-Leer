@@ -1,22 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FiArrowRight, FiScissors, FiMapPin, FiEdit3, FiTruck, FiSmartphone } from "react-icons/fi";
-import products, { categories, collections, collectionCount } from "./Products";
+import { FiArrowRight } from "react-icons/fi";
+import products, { categories, collections } from "./Products";
 import ProductCard from "../components/ProductCard";
 import CategoryArt from "../components/CategoryArt";
 import LeatherPanel from "../components/LeatherPanel";
-import { SHOP_OPEN } from "../config";
+import { SHOP_OPEN, DEMO } from "../config";
+import { demoHeroImage } from "./sampleProducts";
 
-const FEATURES = [
-  { icon: <FiScissors />, title: "Handmade", text: "Cut and stitched by hand in Nairobi." },
-  { icon: <FiMapPin />, title: "Locally sourced", text: "Quality leather from here in Kenya." },
-  { icon: <FiEdit3 />, title: "Custom orders", text: "Tell us what you have in mind." },
-  ...(SHOP_OPEN
-    ? [
-        { icon: <FiSmartphone />, title: "Pay with M-Pesa", text: "Or any Visa / Mastercard." },
-        { icon: <FiTruck />, title: "Delivery across Kenya", text: "Fees shown at checkout." },
-      ]
-    : []),
+// short points along the bottom edge of the hero
+const POINTS = [
+  { title: "Handmade in Nairobi", text: "Cut and stitched by hand" },
+  { title: "Locally sourced", text: "Quality leather from Kenya" },
+  { title: "Custom orders", text: "Made to your request" },
+  ...(SHOP_OPEN ? [{ title: "Delivery across Kenya", text: "Fees shown at checkout" }] : []),
 ];
 
 const CRAFT = [
@@ -28,7 +25,7 @@ const CRAFT = [
 
 const Home = () => (
   <>
-    <section className="hero">
+    <section className="hero" style={DEMO ? { backgroundImage: `url(${demoHeroImage})` } : undefined}>
       <div className="wrap hero-grid">
         <div className="hero-copy">
           <h1>Leather goods, made by hand to be carried every day.</h1>
@@ -42,18 +39,14 @@ const Home = () => (
           </div>
         </div>
       </div>
-    </section>
-
-    <section className="features">
-      <div className="wrap features-grid">
-        {FEATURES.map((f) => (
-          <div key={f.title} className="feature">
-            <span className="feature-icon">{f.icon}</span>
-            <strong>{f.title}</strong>
-            <p>{f.text}</p>
-          </div>
+      <ul className="wrap hero-points">
+        {POINTS.map((pt) => (
+          <li key={pt.title}>
+            <strong>{pt.title}</strong>
+            <span>{pt.text}</span>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
 
     <section className="section wrap">
@@ -62,14 +55,14 @@ const Home = () => (
           <h2 className="display">Shop by type</h2>
         </div>
       </div>
-      <div className="arch-row">
+      <div className="type-grid">
         {categories.map((c) => (
-          <Link key={c.slug} to={`/shop?category=${c.slug}`} className="arch" style={{ "--tone": c.tone }}>
-            <span className="arch-art">
-              {c.image ? <img src={c.image} alt="" /> : <CategoryArt slug={c.slug} />}
+          <Link key={c.slug} to={`/shop?category=${c.slug}`} className={`type-tile ${c.image ? "has-img" : ""}`} style={{ "--tone": c.tone }}>
+            {c.image ? <img src={c.image} alt="" /> : <CategoryArt slug={c.slug} />}
+            <span className="type-label">
+              <span className="type-name">{c.name}</span>
+              <span className="type-cta">Shop now <FiArrowRight /></span>
             </span>
-            <span className="arch-name">{c.name}</span>
-            <FiArrowRight className="arch-go" />
           </Link>
         ))}
       </div>
@@ -86,16 +79,15 @@ const Home = () => (
           <Link to="/collections" className="btn outline">See all collections</Link>
         </div>
         <div className="coll-panel-cards">
-          {collections.map((c) => {
-            const count = collectionCount(c.slug);
-            return (
-              <Link key={c.slug} to={`/collections/${c.slug}`} className="coll-card">
-                <LeatherPanel tone={c.tone} art={c.art} image={c.image} alt={c.name} />
+          {collections.slice(0, 3).map((c) => (
+            <Link key={c.slug} to={`/collections/${c.slug}`} className="coll-card">
+              <LeatherPanel tone={c.tone} art={c.art} image={c.image} alt="" />
+              <span className="coll-card-label">
                 <span className="name">{c.name}</span>
-                <span className="pill">{count > 0 ? `${count} ${count === 1 ? "piece" : "pieces"}` : "Coming soon"}</span>
-              </Link>
-            );
-          })}
+                <span className="coll-card-view">View</span>
+              </span>
+            </Link>
+          ))}
         </div>
       </div>
     </section>
