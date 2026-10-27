@@ -2,6 +2,14 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 export const CartContext = createContext();
 
+export const SHIPPING_OPTIONS = {
+  Nairobi: { Westlands: 200, ThikaRoad: 500, CBD: 150, Karen: 250, Ngong: 100, Kikuyu: 200, Kiambu: 300 },
+  Mombasa: { Mombasa: 1300, Lamu: 1200, Malindi: 1500, Kilifi: 2000, Ukunda: 2000 },
+  Others: { Nakuru: 350, Kisumu: 400, Eldoret: 1800, Muranga: 1000 },
+};
+
+const COUPONS = { SAVE100: 100 };
+
 // A cart line is uniquely identified by product id + chosen colour,
 // so the same product in two colours shows as two lines.
 const makeCartId = (product) => `${product.id}-${product.selectedColor || "default"}`;
@@ -20,6 +28,16 @@ export const CartProvider = ({ children }) => {
     const saved = localStorage.getItem("shippingCost");
     return saved ? parseFloat(saved) : 0;
   });
+
+  // slide-out mini cart; opened automatically whenever something is added
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // kept here (not in the cart page) so the discount carries through to checkout
+  const [coupon, setCoupon] = useState(() => localStorage.getItem("coupon") || "");
+
+  useEffect(() => {
+    localStorage.setItem("coupon", coupon);
+  }, [coupon]);
 
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
@@ -49,6 +67,7 @@ export const CartProvider = ({ children }) => {
       }
       return [...prev, { ...product, quantity: qty, cartId }];
     });
+    setDrawerOpen(true);
   };
 
   const increaseQuantity = (cartId) => {
@@ -77,7 +96,28 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
     setShippingLocation("");
     setShippingCost(0);
+    setCoupon("");
   };
+
+  const selectShipping = (town) => {
+    setShippingLocation(town);
+    let price = 0;
+    Object.values(SHIPPING_OPTIONS).forEach((towns) => {
+      if (towns[town]) price = towns[town];
+    });
+    setShippingCost(price);
+  };
+
+  // returns false when the code isn't recognised
+  const applyCoupon = (code) => {
+    const key = code.trim().toUpperCase();
+    if (!COUPONS[key]) return false;
+    setCoupon(key);
+    return true;
+  };
+
+  const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
+  const discount = COUPONS[coupon] || 0;
 
   return (
     <CartContext.Provider
@@ -92,6 +132,14 @@ export const CartProvider = ({ children }) => {
         setShippingLocation,
         shippingCost,
         setShippingCost,
+        drawerOpen,
+        setDrawerOpen,
+        selectShipping,
+        coupon,
+        applyCoupon,
+        removeCoupon: () => setCoupon(""),
+        subtotal,
+        discount,
       }}
     >
       {children}
