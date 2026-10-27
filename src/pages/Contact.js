@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
-import { CONTACT, DEMO, mailto } from "../config";
+import { CONTACT, DEMO, mailto, whatsappLink } from "../config";
 import { demoContactImage } from "./sampleProducts";
 import Select from "../components/Select";
+import usePageTitle from "../usePageTitle";
 
 const TOPICS = ["General question", "Custom order", "Wholesale / collaboration", "Product enquiry"].map(
   (t) => ({ value: t, label: t })
@@ -12,6 +13,7 @@ const TOPICS = ["General question", "Custom order", "Wholesale / collaboration",
 // beside a short form. No backend yet: the form builds an email and opens the
 // visitor's mail app, addressed to us.
 const Contact = () => {
+  usePageTitle("Contact", "Get in touch with Nula Leer about orders, custom pieces or collaborations.");
   const [form, setForm] = useState({ name: "", topic: TOPICS[0].value, message: "" });
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
@@ -44,6 +46,14 @@ const Contact = () => {
                 <dd><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></dd>
                 <dt>Phone</dt>
                 <dd><a href={`tel:${CONTACT.phone}`}>{CONTACT.phoneDisplay}</a></dd>
+                {CONTACT.whatsapp && (
+                  <>
+                    <dt>WhatsApp</dt>
+                    <dd>
+                      <a href={whatsappLink("Hi Nula Leer, ")} target="_blank" rel="noreferrer">Message us on WhatsApp</a>
+                    </dd>
+                  </>
+                )}
                 <dt>Based in</dt>
                 <dd>{CONTACT.location}</dd>
               </dl>
