@@ -5,6 +5,7 @@ import { useCart } from "../pages/CartContext";
 import { useWishlist } from "../pages/WishlistContext";
 import products, { categories } from "../pages/Products";
 import { SHOP_OPEN } from "../config";
+import SearchSuggestions from "./SearchSuggestions";
 
 const Navbar = () => {
   const { cartItems, setDrawerOpen } = useCart();
@@ -52,7 +53,7 @@ const Navbar = () => {
         </button>
 
         <Link to="/" className="brand">
-          <img src="/logo.png" alt="" />
+          <img src="/logo-small.png" alt="" width="34" height="34" />
           Nula Leer
         </Link>
 
@@ -109,16 +110,21 @@ const Navbar = () => {
       </div>
 
       {searchOpen && (
-        <form className="search-bar" onSubmit={submitSearch}>
-          <FiSearch />
-          <input
-            ref={searchRef}
-            type="search"
-            placeholder="Search wallets, belts, bags…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </form>
+        <div className="search-wrap">
+          <form className="search-bar" onSubmit={submitSearch} role="search">
+            <FiSearch />
+            <input
+              ref={searchRef}
+              type="search"
+              aria-label="Search products"
+              placeholder="Search wallets, belts, bags…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Escape" && setSearchOpen(false)}
+            />
+          </form>
+          <SearchSuggestions query={query} />
+        </div>
       )}
     </header>
   );
