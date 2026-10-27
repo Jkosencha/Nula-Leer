@@ -4,7 +4,8 @@ import { FiLock } from "react-icons/fi";
 import Navbar from "./Navbar";
 import CartDrawer from "./CartDrawer";
 import Footer from "./Footer";
-import { SHOP_OPEN } from "../config";
+import { FaWhatsapp } from "react-icons/fa";
+import { SHOP_OPEN, CONTACT, whatsappLink } from "../config";
 
 // Checkout gets a pared-back header and footer so nothing pulls the buyer away.
 const CheckoutLayout = ({ children }) => (
@@ -36,6 +37,18 @@ const Layout = ({ children, checkout = false }) =>
       {SHOP_OPEN && <CartDrawer />}
       <main>{children}</main>
       <Footer />
+      {CONTACT.whatsapp && (
+        <a
+          href={whatsappLink("Hi Nula Leer, ")}
+          className="wa-float"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Chat with us on WhatsApp"
+          title="Chat with us on WhatsApp"
+        >
+          <FaWhatsapp />
+        </a>
+      )}
     </>
   );
 

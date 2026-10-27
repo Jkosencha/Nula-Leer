@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { LIVE } from "../config";
 
 export const CartContext = createContext();
 
@@ -53,20 +54,22 @@ export const CartProvider = ({ children }) => {
 
   // FIX: respect the quantity passed in (the old version always forced 1),
   // and key by cartId so colour variants don't merge.
-  const addToCart = (product) => {
-    const qty = product.quantity && product.quantity > 0 ? product.quantity : 1;
-    const cartId = makeCartId(product);
-    setCartItems((prev) => {
-      const existing = prev.find((item) => item.cartId === cartId);
-      if (existing) {
-        return prev.map((item) =>
-          item.cartId === cartId
-            ? { ...item, quantity: item.quantity + qty }
-            : item
-        );
-      }
-      return [...prev, { ...product, quantity: qty, cartId }];
-    });
+  const addToCart = (product) => addManyToCart([product]);
+
+  // add several products in one go (e.g. a whole collection), opening the drawer once
+  const addManyToCart = (list) => {
+    setCartItems((prev) =>
+      list.reduce((items, product) => {
+        const qty = product.quantity && product.quantity > 0 ? product.quantity : 1;
+        const cartId = makeCartId(product);
+        if (items.some((item) => item.cartId === cartId)) {
+          return items.map((item) =>
+            item.cartId === cartId ? { ...item, quantity: item.quantity + qty } : item
+          );
+        }
+        return [...items, { ...product, quantity: qty, cartId }];
+      }, prev)
+    );
     setDrawerOpen(true);
   };
 
@@ -117,13 +120,14 @@ export const CartProvider = ({ children }) => {
   };
 
   const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
-  const discount = COUPONS[coupon] || 0;
+  const discount = LIVE.discounts ? COUPONS[coupon] || 0 : 0;
 
   return (
     <CartContext.Provider
       value={{
         cartItems,
         addToCart,
+        addManyToCart,
         increaseQuantity,
         decreaseQuantity,
         removeFromCart,

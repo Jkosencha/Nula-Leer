@@ -1,13 +1,18 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import products, { collections } from "./Products";
 import LeatherPanel from "../components/LeatherPanel";
 import ProductCard from "../components/ProductCard";
 import ComingSoon from "../components/ComingSoon";
+import CollectionSet from "../components/CollectionSet";
+import { SHOP_OPEN } from "../config";
+import usePageTitle from "../usePageTitle";
 
 const CollectionPage = () => {
   const { slug } = useParams();
   const collection = collections.find((c) => c.slug === slug);
+  usePageTitle(collection?.name, collection?.tagline);
+  const items = useMemo(() => products.filter((p) => p.collections?.includes(slug)), [slug]);
 
   if (!collection) {
     return (
@@ -18,7 +23,6 @@ const CollectionPage = () => {
     );
   }
 
-  const items = products.filter((p) => p.collections?.includes(slug));
   const others = collections.filter((c) => c.slug !== slug);
 
   return (
@@ -44,13 +48,17 @@ const CollectionPage = () => {
 
       <section className="wrap section">
         {items.length > 0 ? (
-          <div className="prod-grid four">
-            {items.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
+          SHOP_OPEN ? (
+            <CollectionSet collection={collection} items={items} />
+          ) : (
+            <div className="prod-grid four">
+              {items.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          )
         ) : (
-          <ComingSoon name={collection.name} />
+          <ComingSoon name={collection.name} tone={collection.tone} />
         )}
       </section>
 

@@ -5,9 +5,12 @@ import { FiArrowRight, FiMinus, FiPlus } from "react-icons/fi";
 import { useCart } from "./CartContext";
 import { colorNames } from "./Products";
 import CheckoutSteps from "../components/CheckoutSteps";
+import { LIVE } from "../config";
 import ProductImage from "../components/ProductImage";
+import usePageTitle from "../usePageTitle";
 
 const Cart = () => {
+  usePageTitle("Cart");
   const {
     cartItems,
     removeFromCart,
@@ -18,6 +21,7 @@ const Cart = () => {
     coupon,
     applyCoupon,
     removeCoupon,
+    clearCart,
   } = useCart();
   const [code, setCode] = useState("");
 
@@ -95,19 +99,24 @@ const Cart = () => {
           </div>
           <div className="row total"><span>Total</span><span>KSh {(subtotal - discount).toLocaleString()}</span></div>
 
-          <form className="code-field" onSubmit={submitCoupon}>
+          <form className={`code-field ${LIVE.discounts ? "" : "is-off"}`} onSubmit={submitCoupon}>
             <input
+              disabled={!LIVE.discounts}
               type="text"
               placeholder="Discount code"
               aria-label="Discount code"
               value={code}
               onChange={(e) => setCode(e.target.value)}
             />
-            <button type="submit" aria-label="Apply discount code"><FiArrowRight /></button>
+            <button type="submit" aria-label="Apply discount code" disabled={!LIVE.discounts}><FiArrowRight /></button>
           </form>
+          {!LIVE.discounts && <p className="off-note">Discount codes will be available soon.</p>}
 
           <Link to="/checkout" className="btn square block">Checkout now</Link>
-          <Link to="/shop" className="under-link">Continue shopping</Link>
+          <div className="cart-links">
+            <Link to="/shop" className="under-link">Continue shopping</Link>
+            <button className="under-link" onClick={clearCart}>Clear cart</button>
+          </div>
         </aside>
       </div>
     </div>

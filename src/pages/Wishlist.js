@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import products from "./Products";
 import { useWishlist } from "./WishlistContext";
 import ProductCard from "../components/ProductCard";
+import usePageTitle from "../usePageTitle";
 
 const Wishlist = () => {
+  usePageTitle("Wishlist");
   const { wishlist } = useWishlist();
   const items = products.filter((p) => wishlist.includes(p.id));
 

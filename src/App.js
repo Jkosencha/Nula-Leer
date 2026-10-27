@@ -17,6 +17,8 @@ import Wishlist from "./pages/Wishlist";
 import Contact from "./pages/Contact";
 import Collections from "./pages/Collections";
 import CollectionPage from "./pages/CollectionPage";
+import OrderConfirmation from "./pages/OrderConfirmation";
+import Policy from "./pages/Policy";
 import { SHOP_OPEN } from "./config";
 import "./App.css";
 
@@ -41,10 +43,12 @@ const App = () => (
           <Route path="/contact" element={<Layout><Contact /></Layout>} />
           <Route path="/collections" element={<Layout><Collections /></Layout>} />
           <Route path="/collections/:slug" element={<Layout><CollectionPage /></Layout>} />
+          <Route path="/policies/:slug" element={<Layout><Policy /></Layout>} />
           {SHOP_OPEN && (
             <>
               <Route path="/cart" element={<Layout><Cart /></Layout>} />
               <Route path="/checkout" element={<Layout checkout><Checkout /></Layout>} />
+              <Route path="/order/confirmation" element={<Layout checkout><OrderConfirmation /></Layout>} />
               <Route path="/wishlist" element={<Layout><Wishlist /></Layout>} />
             </>
           )}

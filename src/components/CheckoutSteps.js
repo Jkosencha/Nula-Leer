@@ -6,6 +6,7 @@ const STEPS = [
   { key: "cart", label: "Shopping cart", to: "/cart" },
   { key: "shipping", label: "Shipping" },
   { key: "payment", label: "Payment" },
+  { key: "confirmation", label: "Confirmation" },
 ];
 
 // "Shopping cart → Shipping → Payment"; earlier steps are links back.

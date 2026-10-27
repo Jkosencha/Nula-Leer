@@ -4,9 +4,11 @@ import { FiHeart, FiMinus, FiPlus, FiStar, FiMail, FiPhone } from "react-icons/f
 import { useCart, SHIPPING_OPTIONS } from "./CartContext";
 import { useWishlist } from "./WishlistContext";
 import products, { colorNames, categoryName } from "./Products";
-import { SHOP_OPEN, CONTACT, mailto } from "../config";
+import { SHOP_OPEN, LIVE, CONTACT, mailto } from "../config";
+import { availability } from "../availability";
 import ProductCard from "../components/ProductCard";
 import ProductImage from "../components/ProductImage";
+import usePageTitle from "../usePageTitle";
 
 const nairobiFrom = Math.min(...Object.values(SHIPPING_OPTIONS.Nairobi));
 
@@ -17,6 +19,7 @@ const ProductDetails = () => {
   const { isWished, toggleWish } = useWishlist();
 
   const product = products.find((item) => item.id === parseInt(id, 10));
+  usePageTitle(product?.name, product?.description);
 
   const [mainImage, setMainImage] = useState(product?.images?.[0] || product?.image || "");
   const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || "");
@@ -123,7 +126,12 @@ const ProductDetails = () => {
             <h1>{product.name}</h1>
             <span className="price">KSh {product.price.toLocaleString()}</span>
           </div>
-          {averageRating && (
+          {availability(product) && (
+            <p className={`avail ${availability(product).low ? "low" : ""} ${availability(product).soldOut ? "out" : ""}`}>
+              {availability(product).label}
+            </p>
+          )}
+          {LIVE.reviews && averageRating && (
             <span className="rating-sum">
               <FiStar /> {averageRating} ({allRatings.length})
             </span>
@@ -160,10 +168,16 @@ const ProductDetails = () => {
                 </div>
               </div>
               <div className="buy-row">
-                <button className="btn square tan" onClick={() => addToCart({ ...product, selectedColor, quantity })}>
-                  Add to cart
+                <button
+                  className="btn square tan"
+                  disabled={availability(product)?.soldOut}
+                  onClick={() => addToCart({ ...product, selectedColor, quantity })}
+                >
+                  {availability(product)?.soldOut ? "Sold out" : "Add to cart"}
                 </button>
-                <button className="btn square outline" onClick={buyNow}>Buy now</button>
+                <button className="btn square outline" disabled={availability(product)?.soldOut} onClick={buyNow}>
+                  Buy now
+                </button>
                 <button
                   className={`icon-btn boxed ${wished ? "on" : ""}`}
                   aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}
@@ -200,6 +214,25 @@ const ProductDetails = () => {
                 )}
               </div>
             </details>
+            {(product.material || product.dimensions) && (
+              <details>
+                <summary>Material & size</summary>
+                <dl className="specs">
+                  {product.material && (
+                    <>
+                      <dt>Material</dt>
+                      <dd>{product.material}</dd>
+                    </>
+                  )}
+                  {product.dimensions && (
+                    <>
+                      <dt>Size</dt>
+                      <dd>{product.dimensions}</dd>
+                    </>
+                  )}
+                </dl>
+              </details>
+            )}
             <details>
               <summary>Care</summary>
               <p>
@@ -218,10 +251,11 @@ const ProductDetails = () => {
             <details>
               <summary>Reviews</summary>
               <div>
-                <div className="stars">
+                <div className={`stars ${LIVE.reviews ? "" : "is-off"}`}>
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
+                      disabled={!LIVE.reviews}
                       className={`star ${userRating >= star ? "on" : ""}`}
                       onClick={() => handleStarClick(star)}
                       aria-label={`${star} star${star > 1 ? "s" : ""}`}
@@ -229,12 +263,14 @@ const ProductDetails = () => {
                       ★
                     </button>
                   ))}
-                  {userRating > 0 && (
+                  {LIVE.reviews && userRating > 0 && (
                     <button className="link-btn" onClick={handleDeleteRating}>Remove</button>
                   )}
                 </div>
                 <p className="muted small">
-                  {averageRating
+                  {!LIVE.reviews
+                    ? "Reviews will open once the shop launches."
+                    : averageRating
                     ? `Average ${averageRating} from ${allRatings.length} rating${allRatings.length > 1 ? "s" : ""}`
                     : "No ratings yet. Tap a star to rate this piece."}
                 </p>

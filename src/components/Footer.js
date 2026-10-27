@@ -1,8 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FiMail, FiPhone, FiMapPin } from "react-icons/fi";
+import { FaWhatsapp } from "react-icons/fa";
 import { categories, collections } from "../pages/Products";
-import { CONTACT, SHOP_OPEN } from "../config";
+import { CONTACT, SHOP_OPEN, whatsappLink } from "../config";
+import { POLICY_LINKS } from "../pages/Policy";
 
 const Footer = () => (
   <footer className="footer">
@@ -42,12 +44,22 @@ const Footer = () => (
         <h4>Get in touch</h4>
         <a href={`mailto:${CONTACT.email}`} className="with-icon"><FiMail /> {CONTACT.email}</a>
         <a href={`tel:${CONTACT.phone}`} className="with-icon"><FiPhone /> {CONTACT.phoneDisplay}</a>
+        {CONTACT.whatsapp && (
+          <a href={whatsappLink("Hi Nula Leer, ")} className="with-icon" target="_blank" rel="noreferrer">
+            <FaWhatsapp /> WhatsApp
+          </a>
+        )}
         <span className="with-icon"><FiMapPin /> {CONTACT.location}</span>
       </div>
     </div>
 
     <div className="wrap footer-base">
       <small>&copy; {new Date().getFullYear()} Nula Leer. Handmade in Kenya.</small>
+      <nav className="footer-legal" aria-label="Policies">
+        {POLICY_LINKS.map((p) => (
+          <Link key={p.slug} to={`/policies/${p.slug}`}>{p.title}</Link>
+        ))}
+      </nav>
     </div>
   </footer>
 );
