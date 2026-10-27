@@ -1,51 +1,64 @@
 import React from "react";
-import Reveal from "../components/Reveal";
+import { Link } from "react-router-dom";
 
-const About = () => (
-  <>
-    <div className="wrap page-head">
-      <span className="kicker">Our Story</span>
-      <h1>About Nula Leer</h1>
-      <p className="sub">
-        A Kenya-based leather house creating high-quality, handcrafted goods that blend
-        traditional craftsmanship with modern design.
-      </p>
-    </div>
+const About = () => {
+  return (
+    <>
+      <section className="about-hero">
+        <div className="wrap">
+          <h1>Leather goods from Nairobi, made by hand.</h1>
+          <p className="lead">
+            Nula Leer is a Kenyan leather brand making handcrafted goods that pair
+            traditional craftsmanship with modern design.
+          </p>
+        </div>
+      </section>
 
-    <section className="block">
-      <div className="wrap about-grid">
-        <Reveal>
-          <img className="media" src="/Kosencha.jpg" alt="Jennifer Kosencha, Founder" />
-        </Reveal>
-        <Reveal>
-          <span className="kicker">Meet the Founder</span>
-          <h2>Soul, style, and story.</h2>
+      <section className="section wrap story">
+        <img src="/founder-heritage.jpg" alt="Jennifer Kosencha in a beaded headpiece, founder of Nula Leer" />
+        <div>
+          <h2>Jennifer Kosencha</h2>
           <p>
-            I'm Jennifer Kosencha, the heart behind Nula Leer. With a deep love for culture,
-            design, and quality craftsmanship, I started this journey to honour my heritage
-            and empower local artisans.
+            I'm Jennifer Kosencha, the founder of Nula Leer. I love culture, design and good
+            craftsmanship, and I started this brand to honour my heritage and work with
+            local artisans.
           </p>
           <p>
-            The name is inspired by “N-orunk-ula,” my mother's name, joined with <em>leer</em> —
-            the Dutch word for leather. Our line spans wallets, purses, belts, and watch
-            straps, with travel bags, backpacks, and handbags on the way.
+            The name comes from “N-orunk-ula”, my mother's name, joined with <i>leer</i>, the
+            Dutch word for leather. We're starting with belts, wallets, purses, laptop
+            sleeves, wash bags and key holders.
           </p>
-          <div className="sign">— Jennifer Kosencha</div>
-        </Reveal>
-      </div>
-    </section>
+        </div>
+      </section>
 
-    <section className="quote">
-      <Reveal className="wrap">
-        <span className="kicker">What we stand for</span>
-        <p>
-          “We prioritise sustainability — sourcing locally and empowering artisans through
-          meaningful partnerships.”
-        </p>
-        <div className="by">Affordable luxury, made to last</div>
-      </Reveal>
-    </section>
-  </>
-);
+      <section className="perks">
+        <div className="wrap values">
+          <div>
+            <h3>Sourced locally</h3>
+            <p>We buy our leather in Kenya and keep production close to home.</p>
+          </div>
+          <div>
+            <h3>Made with artisans</h3>
+            <p>Every piece is made with local artisans we work with directly.</p>
+          </div>
+          <div>
+            <h3>Affordable quality</h3>
+            <p>Good leather, honest prices, made to be used every day.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="wrap">
+        <div className="cta-band">
+          <div>
+            <h2>Have a question or an idea?</h2>
+            <p>Custom orders and collaborations are welcome.</p>
+          </div>
+          <Link to="/contact" className="btn light">Contact us</Link>
+        </div>
+      </section>
+    </>
+  );
+};
 
 export default About;

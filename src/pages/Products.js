@@ -1,64 +1,85 @@
-const products = [
+import { DEMO } from "../config";
+import sampleProducts from "./sampleProducts";
+
+// Categories show on the site even before they have products.
+// `tone` is the leather colour used for the tile until it has a photo.
+// Add `image: "/categories/belts.jpg"` (file in public/categories/) to give one a cover photo.
+export const categories = [
+  { slug: "belts", name: "Belts", tone: "#9a5a2b", description: "Belts for every day and for dressing up." },
+  { slug: "wallets", name: "Wallets", tone: "#4a2c1c", description: "Wallets and card holders that soften with age." },
+  { slug: "purses", name: "Purses", tone: "#6d2b24", description: "Purses with room for the essentials." },
+  { slug: "laptop-sleeves", name: "Laptop sleeves", tone: "#2b2420", description: "Leather sleeves for work and travel." },
+  { slug: "wash-bags", name: "Wash bags", tone: "#5a5434", description: "Toiletry bags for weekends away." },
+  { slug: "key-holders", name: "Key holders", tone: "#7c4a2a", description: "Small leather pieces that keep keys in order." },
+];
+
+export const categoryName = (slug) => categories.find((c) => c.slug === slug)?.name || slug;
+
+// Collections group pieces across categories (a product can be in several).
+// `art` picks the line drawing shown until the collection has a photo (`image`).
+export const collections = [
   {
-    id: 1,
-    name: "Leather Wallet",
-    category: "Wallets",
-    price: 1500,
-    image: "/purse1.jpeg",
-    images: ["/wallet1.jpeg", "/belt1.jpeg", "/purse1.jpeg"],
-    description: "Handmade with premium cowhide leather. Sleek, durable, and timeless.",
-    colors: ["#1c1c1c", "#6b4226", "#b07d4f"],
+    slug: "safari",
+    name: "Safari",
+    tone: "#6b6236",
+    art: "safari",
+    tagline: "Made for the road, the bush and long weekends upcountry.",
+    description:
+      "Hard-wearing pieces for game drives, road trips and travel: wash bags, belts and sleeves that can take the dust.",
   },
   {
-    id: 2,
-    name: "Brown Belt",
-    category: "Belts",
-    price: 1200,
-    image: "/belt1.jpeg",
-    images: ["/belt1.jpeg", "/wallet1.jpeg", "/purse1.jpeg"],
-    description: "Handmade with premium cowhide leather. Sleek, durable, and timeless.",
-    colors: ["#1c1c1c", "#6b4226", "#b07d4f"],
+    slug: "gifts",
+    name: "The Gift Edit",
+    tone: "#6d2b24",
+    art: "gifts",
+    tagline: "Leather they'll keep, and remember you by.",
+    description:
+      "Pieces picked for giving: birthdays, graduations, weddings and thank-yous. Small enough to wrap, good enough to keep.",
   },
   {
-    id: 3,
-    name: "Leather Backpack",
-    category: "Bags",
-    price: 3500,
-    image: "/wallet1.jpeg",
-    images: ["/purse1.jpeg", "/wallet1.jpeg", "/belt1.jpeg"],
-    description: "Handmade with premium cowhide leather. Sleek, durable, and timeless.",
-    colors: ["#1c1c1c", "#efe9e0", "#b07d4f"],
+    slug: "workday",
+    name: "Workday",
+    tone: "#2b2420",
+    art: "laptop-sleeves",
+    tagline: "From the morning commute to the boardroom.",
+    description: "Laptop sleeves, card holders and belts for the working week in Nairobi and beyond.",
   },
   {
-    id: 4,
-    name: "Slim Card Holder",
-    category: "Wallets",
-    price: 1800,
-    image: "/wallet1.jpeg",
-    images: ["/wallet1.jpeg", "/belt1.jpeg", "/purse1.jpeg"],
-    description: "Compact, elegant carry for your everyday essentials.",
-    colors: ["#1c1c1c", "#6b4226", "#b07d4f"],
-  },
-  {
-    id: 5,
-    name: "Classic Belt",
-    category: "Belts",
-    price: 1200,
-    image: "/belt1.jpeg",
-    images: ["/belt1.jpeg", "/wallet1.jpeg", "/purse1.jpeg"],
-    description: "A wardrobe staple in warm cognac with a solid buckle.",
-    colors: ["#1c1c1c", "#efe9e0", "#b07d4f"],
-  },
-  {
-    id: 6,
-    name: "Weekend Tote",
-    category: "Bags",
-    price: 3500,
-    image: "/purse1.jpeg",
-    images: ["/purse1.jpeg", "/wallet1.jpeg", "/belt1.jpeg"],
-    description: "Soft-temper leather with room to spare for getaways.",
-    colors: ["#1c1c1c", "#6b4226", "#b07d4f", "#efe9e0"],
+    slug: "weekender",
+    name: "Weekender",
+    tone: "#9a5a2b",
+    art: "wash-bags",
+    tagline: "Everything for two nights away.",
+    description: "Wash bags, key holders and small leather goods for short trips and weekends away.",
   },
 ];
 
+// Products. To add one, put its photos in public/products/ and copy this shape.
+// `details`, `collections` and `images` are optional.
+//
+// {
+//   id: 1,                                  // unique number
+//   name: "Classic Belt",
+//   category: "belts",                      // a slug from the list above
+//   price: 1200,                            // KSh
+//   image: "/products/classic-belt-1.jpg",  // main photo (cards)
+//   images: ["/products/classic-belt-1.jpg", "/products/classic-belt-2.jpg"],
+//   description: "Short description shown on the product page.",
+//   details: ["Full-grain leather", "Solid brass buckle"],  // bullet points
+//   colors: ["#1c1c1c", "#6b4226"],         // hex codes; names come from colorNames below
+//   collections: ["safari", "gifts"],       // slugs from the collections list
+// },
+const realProducts = [];
+
+const products = DEMO && realProducts.length === 0 ? sampleProducts : realProducts;
+
 export default products;
+
+export const collectionCount = (slug) => products.filter((p) => p.collections?.includes(slug)).length;
+
+export const colorNames = {
+  "#1c1c1c": "Black",
+  "#6b4226": "Chocolate",
+  "#b07d4f": "Tan",
+  "#efe9e0": "Cream",
+};
