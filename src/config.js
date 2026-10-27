@@ -1,8 +1,8 @@
 // Site-wide settings. Update these in one place.
 
-// Demo mode (`npm run demo`): fills the shop with sample products and opens the
-// cart/checkout so the full shopping flow can be previewed. Never on in a normal build.
-export const DEMO = process.env.REACT_APP_DEMO === "true";
+// TEMPORARY demo mode for designing: sample products and Unsplash photos from
+// public/demo/. Before launch set this to false and delete public/demo/.
+export const DEMO = true;
 
 // Cart, checkout and wishlist. Set to false to hide them again
 // (products then show "Enquire" instead of "Add to cart").

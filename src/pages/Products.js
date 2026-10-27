@@ -1,23 +1,27 @@
 import { DEMO } from "../config";
-import sampleProducts from "./sampleProducts";
+import sampleProducts, { demoCategoryImages, demoCollectionImages } from "./sampleProducts";
+
+// while DEMO is on, borrow the demo photos for anything without its own image
+const withDemoImages = (list, images) =>
+  DEMO ? list.map((item) => ({ image: images[item.slug], ...item })) : list;
 
 // Categories show on the site even before they have products.
 // `tone` is the leather colour used for the tile until it has a photo.
 // Add `image: "/categories/belts.jpg"` (file in public/categories/) to give one a cover photo.
-export const categories = [
+export const categories = withDemoImages([
   { slug: "belts", name: "Belts", tone: "#9a5a2b", description: "Belts for every day and for dressing up." },
   { slug: "wallets", name: "Wallets", tone: "#4a2c1c", description: "Wallets and card holders that soften with age." },
   { slug: "purses", name: "Purses", tone: "#6d2b24", description: "Purses with room for the essentials." },
   { slug: "laptop-sleeves", name: "Laptop sleeves", tone: "#2b2420", description: "Leather sleeves for work and travel." },
   { slug: "wash-bags", name: "Wash bags", tone: "#5a5434", description: "Toiletry bags for weekends away." },
   { slug: "key-holders", name: "Key holders", tone: "#7c4a2a", description: "Small leather pieces that keep keys in order." },
-];
+], demoCategoryImages);
 
 export const categoryName = (slug) => categories.find((c) => c.slug === slug)?.name || slug;
 
 // Collections group pieces across categories (a product can be in several).
 // `art` picks the line drawing shown until the collection has a photo (`image`).
-export const collections = [
+export const collections = withDemoImages([
   {
     slug: "safari",
     name: "Safari",
@@ -52,10 +56,10 @@ export const collections = [
     tagline: "Everything for two nights away.",
     description: "Wash bags, key holders and small leather goods for short trips and weekends away.",
   },
-];
+], demoCollectionImages);
 
 // Products. To add one, put its photos in public/products/ and copy this shape.
-// `details`, `collections` and `images` are optional.
+// `details`, `collections`, `images`, `badge` and `featured` are optional.
 //
 // {
 //   id: 1,                                  // unique number
@@ -68,6 +72,8 @@ export const collections = [
 //   details: ["Full-grain leather", "Solid brass buckle"],  // bullet points
 //   colors: ["#1c1c1c", "#6b4226"],         // hex codes; names come from colorNames below
 //   collections: ["safari", "gifts"],       // slugs from the collections list
+//   badge: "New",                           // optional corner label, e.g. "New" or "Best seller"
+//   featured: true,                         // optional: shown in the big feature rows on the shop page
 // },
 const realProducts = [];
 
