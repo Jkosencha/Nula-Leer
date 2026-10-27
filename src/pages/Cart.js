@@ -18,6 +18,7 @@ const Cart = () => {
     coupon,
     applyCoupon,
     removeCoupon,
+    clearCart,
   } = useCart();
   const [code, setCode] = useState("");
 
@@ -107,7 +108,10 @@ const Cart = () => {
           </form>
 
           <Link to="/checkout" className="btn square block">Checkout now</Link>
-          <Link to="/shop" className="under-link">Continue shopping</Link>
+          <div className="cart-links">
+            <Link to="/shop" className="under-link">Continue shopping</Link>
+            <button className="under-link" onClick={clearCart}>Clear cart</button>
+          </div>
         </aside>
       </div>
     </div>
