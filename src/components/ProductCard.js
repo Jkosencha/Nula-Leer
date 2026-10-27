@@ -1,14 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FiHeart } from "react-icons/fi";
-import { useCart } from "../pages/CartContext";
 import { useWishlist } from "../pages/WishlistContext";
 import { colorNames } from "../pages/Products";
 import { SHOP_OPEN } from "../config";
 import ProductImage from "./ProductImage";
+import { availability } from "../availability";
 
 const ProductCard = ({ product }) => {
-  const { addToCart } = useCart();
   const { isWished, toggleWish } = useWishlist();
   const hoverImage = product.images?.find((img) => img !== product.image);
   const wished = isWished(product.id);
@@ -16,7 +15,11 @@ const ProductCard = ({ product }) => {
   return (
     <article className="card">
       <div className="card-media">
-        {product.badge && <span className="card-badge">{product.badge}</span>}
+        {availability(product)?.soldOut ? (
+          <span className="card-badge out">Sold out</span>
+        ) : (
+          product.badge && <span className="card-badge">{product.badge}</span>
+        )}
         <Link to={`/productDetails/${product.id}`}>
           <ProductImage src={product.image} product={product} alt={product.name} />
           {hoverImage && <img className="alt" src={hoverImage} alt="" aria-hidden="true" />}
@@ -30,12 +33,9 @@ const ProductCard = ({ product }) => {
             >
               <FiHeart />
             </button>
-            <button
-              className="quick-add"
-              onClick={() => addToCart({ ...product, selectedColor: product.colors?.[0], quantity: 1 })}
-            >
-              Quick add
-            </button>
+            <Link to={`/productDetails/${product.id}`} className="quick-add">
+              View
+            </Link>
           </>
         )}
       </div>

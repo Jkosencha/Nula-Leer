@@ -3,6 +3,7 @@ import { FiCheck } from "react-icons/fi";
 import { useCart } from "../pages/CartContext";
 import { colorNames } from "../pages/Products";
 import ProductImage from "./ProductImage";
+import { availability } from "../availability";
 
 // Collection "set builder": tap pieces to include them, pick a colour for each,
 // and add the whole set at once. Individual prices are left out on purpose;
@@ -13,9 +14,12 @@ const CollectionSet = ({ collection, items }) => {
 
   // reset when switching collections: everything included, first colour chosen
   useEffect(() => {
-    setPicked(Object.fromEntries(items.map((p) => [p.id, { on: true, color: p.colors?.[0] }])));
+    setPicked(
+      Object.fromEntries(items.map((p) => [p.id, { on: !availability(p)?.soldOut, color: p.colors?.[0] }]))
+    );
   }, [items]);
 
+  const available = items.filter((p) => !availability(p)?.soldOut);
   const chosen = items.filter((p) => picked[p.id]?.on);
   const total = chosen.reduce((sum, p) => sum + p.price, 0);
   const update = (id, change) => setPicked((prev) => ({ ...prev, [id]: { ...prev[id], ...change } }));
@@ -28,11 +32,13 @@ const CollectionSet = ({ collection, items }) => {
       <ul className="set-grid">
         {items.map((p) => {
           const state = picked[p.id] || {};
+          const soldOut = availability(p)?.soldOut;
           return (
             <li key={p.id} className={`set-card ${state.on ? "on" : ""}`}>
               <button
                 type="button"
                 className="set-card-pick"
+                disabled={soldOut}
                 aria-pressed={!!state.on}
                 onClick={() => update(p.id, { on: !state.on })}
               >
@@ -40,7 +46,10 @@ const CollectionSet = ({ collection, items }) => {
                   <ProductImage src={p.image} product={p} alt={p.name} />
                   <span className="set-tick" aria-hidden="true">{state.on && <FiCheck />}</span>
                 </span>
-                <span className="set-card-name">{p.name}</span>
+                <span className="set-card-name">
+                  {p.name}
+                  {soldOut && <span className="muted"> · Sold out</span>}
+                </span>
               </button>
               {p.colors?.length > 1 && (
                 <div className="set-colors" role="radiogroup" aria-label={`${p.name} colour`}>
@@ -54,6 +63,7 @@ const CollectionSet = ({ collection, items }) => {
                       style={{ background: c }}
                       title={colorNames[c] || c}
                       aria-label={colorNames[c] || c}
+                      disabled={soldOut}
                       onClick={() => update(p.id, { color: c, on: true })}
                     />
                   ))}
@@ -88,7 +98,7 @@ const CollectionSet = ({ collection, items }) => {
           <span>KSh {total.toLocaleString()}</span>
         </div>
         <button className="btn square tan block" disabled={chosen.length === 0} onClick={addSet}>
-          {chosen.length === items.length ? "Add the full set to cart" : "Add set to cart"}
+          {chosen.length === available.length ? "Add the full set to cart" : "Add set to cart"}
         </button>
       </aside>
     </div>

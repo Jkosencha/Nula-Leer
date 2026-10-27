@@ -24,7 +24,7 @@ export const demoCollectionImages = {
 
 const sampleProducts = [
   {
-    id: 101, featured: true, badge: "Best seller", name: "Classic Belt", category: "belts", price: 2200,
+    id: 101, material: "Sample: vegetable-tanned leather", dimensions: "Sample: 3.5 cm wide, sizes 30–42", stock: 2, featured: true, badge: "Best seller", name: "Classic Belt", category: "belts", price: 2200,
     image: d("belt-1.jpg"), images: [d("belt-1.jpg"), d("belt-2.jpg")],
     description: "An everyday belt with a simple buckle, made to wear in.",
     details: ["Sample product for preview", "Sizes on request"],
@@ -45,7 +45,7 @@ const sampleProducts = [
     colors: ["#b07d4f", "#1c1c1c"], collections: ["gifts", "workday"],
   },
   {
-    id: 104, name: "Leather Tote", category: "purses", price: 2600,
+    id: 104, material: "Sample: full-grain leather", dimensions: "Sample: 35 × 38 cm", madeToOrder: 7, name: "Leather Tote", category: "purses", price: 2600,
     image: d("purse-1.jpg"), images: [d("purse-1.jpg"), d("purse-2.jpg"), d("purse-3.jpg")],
     description: "An open tote with room for the essentials.",
     details: ["Sample product for preview"],
@@ -73,7 +73,7 @@ const sampleProducts = [
     colors: ["#b07d4f", "#6b4226", "#1c1c1c"], collections: ["gifts", "weekender"],
   },
   {
-    id: 108, name: "Travel Organiser", category: "wallets", price: 2800,
+    id: 108, stock: 0, name: "Travel Organiser", category: "wallets", price: 2800,
     image: d("organiser.jpg"), images: [d("organiser.jpg")],
     description: "A fold-out organiser for cards, cables and small tools.",
     details: ["Sample product for preview"],

@@ -74,6 +74,10 @@ export const collections = withDemoImages([
 //   collections: ["safari", "gifts"],       // slugs from the collections list
 //   badge: "New",                           // optional corner label, e.g. "New" or "Best seller"
 //   featured: true,                         // optional: shown in the big feature rows on the shop page
+//   material: "Full-grain cowhide",         // optional, shown under "Material & size"
+//   dimensions: "35 × 25 cm",               // optional, shown under "Material & size"
+//   stock: 4,                               // optional: 0 = sold out, 1-3 = "Only N left"
+//   madeToOrder: 7,                         // optional: days to make it (instead of stock)
 // },
 const realProducts = [];
 
