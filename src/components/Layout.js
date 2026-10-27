@@ -13,13 +13,13 @@ const CheckoutLayout = ({ children }) => (
     <header className="header co-header">
       <div className="nav-inner">
         <Link to="/" className="brand">
-          <img src="/logo.png" alt="" />
+          <img src="/logo-small.png" alt="" width="34" height="34" />
           Nula Leer
         </Link>
         <span className="secure"><FiLock /> Secure checkout</span>
       </div>
     </header>
-    <main>{children}</main>
+    <main id="main" tabIndex={-1}>{children}</main>
     <footer className="co-footer wrap">
       <small>&copy; {new Date().getFullYear()} Nula Leer</small>
       <Link to="/shop" className="under-link">Back to shop</Link>
@@ -33,9 +33,10 @@ const Layout = ({ children, checkout = false }) =>
     <CheckoutLayout>{children}</CheckoutLayout>
   ) : (
     <>
+      <a href="#main" className="skip-link">Skip to content</a>
       <Navbar />
       {SHOP_OPEN && <CartDrawer />}
-      <main>{children}</main>
+      <main id="main" tabIndex={-1}>{children}</main>
       <Footer />
       {CONTACT.whatsapp && (
         <a
