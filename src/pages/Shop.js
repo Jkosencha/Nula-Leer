@@ -1,117 +1,146 @@
-import React, { useContext, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import products from "./Products";
-import { CartContext } from "./CartContext";
+import React, { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { FiSliders, FiX } from "react-icons/fi";
+import products, { categories, categoryName } from "./Products";
+import ProductCard from "../components/ProductCard";
+import ComingSoon from "../components/ComingSoon";
 
-const CATEGORIES = ["All", "Wallets", "Belts", "Bags", "Accessories"];
-const MIN_PRICE = 1000;
-const MAX_PRICE = 4000;
+const MIN_PRICE = 500;
+const MAX_PRICE = Math.max(4000, ...products.map((p) => p.price));
 
 const Shop = () => {
-  const { addToCart } = useContext(CartContext);
-  const [category, setCategory] = useState("All");
+  // category and search live in the URL so nav links and search can deep-link here
+  const [params, setParams] = useSearchParams();
+  const category = params.get("category") || "all";
+  const query = params.get("q") || "";
+
   const [maxPrice, setMaxPrice] = useState(MAX_PRICE);
   const [sort, setSort] = useState("default");
   const [showFilters, setShowFilters] = useState(false);
 
+  const setParam = (key, value) => {
+    const next = new URLSearchParams(params);
+    if (value) next.set(key, value);
+    else next.delete(key);
+    setParams(next);
+  };
+
+  const current = categories.find((c) => c.slug === category);
+  const inCategory = useMemo(
+    () => products.filter((p) => category === "all" || p.category === category),
+    [category]
+  );
+
   const filtered = useMemo(() => {
-    return products
-      .filter((p) => category === "All" || p.category === category)
+    const q = query.toLowerCase();
+    return inCategory
       .filter((p) => p.price <= maxPrice)
+      .filter(
+        (p) =>
+          !q ||
+          p.name.toLowerCase().includes(q) ||
+          categoryName(p.category).toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q)
+      )
       .sort((a, b) => {
         if (sort === "lowToHigh") return a.price - b.price;
         if (sort === "highToLow") return b.price - a.price;
+        if (sort === "name") return a.name.localeCompare(b.name);
         return 0;
       });
-  }, [category, maxPrice, sort]);
-
-  const quickAdd = (e, product) => {
-    e.preventDefault();
-    addToCart({ ...product, selectedColor: product.colors[0], quantity: 1 });
-    toast.success(`${product.name} added to cart`);
-  };
+  }, [inCategory, maxPrice, sort, query]);
 
   const rangePercent = ((maxPrice - MIN_PRICE) / (MAX_PRICE - MIN_PRICE)) * 100;
+  const title = query ? `Results for “${query}”` : current ? current.name : "Shop all";
+
+  const resetAll = () => {
+    setParams({});
+    setMaxPrice(MAX_PRICE);
+  };
 
   return (
-    <>
-      <div className="wrap page-head">
-        <span className="kicker">The Collection</span>
-        <h1>Shop Nula Leer</h1>
+    <div className="wrap shop-page">
+      <div className="shop-head">
+        <h1>{title}</h1>
+        {inCategory.length > 0 && (
+          <p className="muted">{filtered.length} {filtered.length === 1 ? "product" : "products"}</p>
+        )}
+      </div>
+      {current && <p className="muted cat-desc">{current.description}</p>}
+
+      <div className="chips">
+        {[{ slug: "all", name: "All" }, ...categories].map((c) => (
+          <button
+            key={c.slug}
+            className={`chip ${category === c.slug ? "on" : ""}`}
+            onClick={() => setParam("category", c.slug === "all" ? "" : c.slug)}
+          >
+            {c.name}
+          </button>
+        ))}
+        {query && (
+          <button className="chip on" onClick={() => setParam("q", "")}>
+            “{query}” <FiX />
+          </button>
+        )}
       </div>
 
-      <div className="wrap shop">
-        <aside className={`sidebar ${showFilters ? "show" : ""}`}>
-          <h3>Categories</h3>
-          <ul>
-            {CATEGORIES.map((c) => (
-              <li
-                key={c}
-                className={category === c ? "active" : ""}
-                onClick={() => setCategory(c)}
-              >
-                {c}
-              </li>
-            ))}
-          </ul>
-
-          <div className="price-filter">
-            <h3>Filter by price</h3>
-            <input
-              type="range"
-              min={MIN_PRICE}
-              max={MAX_PRICE}
-              value={maxPrice}
-              style={{ "--p": `${rangePercent}%` }}
-              onChange={(e) => setMaxPrice(parseInt(e.target.value, 10))}
-            />
-            <p className="vals">
-              KSh {MIN_PRICE.toLocaleString()} – KSh {maxPrice.toLocaleString()}
-            </p>
-            <button onClick={() => setMaxPrice(MAX_PRICE)}>Reset</button>
-          </div>
-        </aside>
-
-        <div className="shop-main">
-          <div className="mobile-filters">
-            <button onClick={() => setShowFilters((v) => !v)}>
-              {showFilters ? "Hide filters" : "Show filters"}
+      {inCategory.length === 0 && !query ? (
+        <ComingSoon name={current?.name} tone={current?.tone} art={current?.slug} />
+      ) : (
+        <>
+          <div className="toolbar">
+            <button className="btn outline sm filter-toggle" onClick={() => setShowFilters((v) => !v)}>
+              <FiSliders /> Filters
             </button>
+            <label className="sort">
+              Sort by
+              <select value={sort} onChange={(e) => setSort(e.target.value)}>
+                <option value="default">Featured</option>
+                <option value="lowToHigh">Price: low to high</option>
+                <option value="highToLow">Price: high to low</option>
+                <option value="name">Name: A–Z</option>
+              </select>
+            </label>
           </div>
 
-          <div className="top-bar">
-            <p>
-              Showing {filtered.length} result{filtered.length !== 1 && "s"}
-            </p>
-            <select value={sort} onChange={(e) => setSort(e.target.value)}>
-              <option value="default">Default sorting</option>
-              <option value="lowToHigh">Price: Low to High</option>
-              <option value="highToLow">Price: High to Low</option>
-            </select>
-          </div>
-
-          <div className="prod-grid">
-            {filtered.map((p) => (
-              <div className="card" key={p.id}>
-                <Link to={`/productDetails/${p.id}`} style={{ display: "contents" }}>
-                  <div className="img"><img src={p.image} alt={p.name} /></div>
-                  <div className="body">
-                    <div className="cat">{p.category}</div>
-                    <h3>{p.name}</h3>
-                    <p className="desc">{p.description}</p>
-                    <div className="foot">
-                      <span className="price">KSh {p.price.toLocaleString()}</span>
-                      <button className="add" onClick={(e) => quickAdd(e, p)}>Add +</button>
-                    </div>
-                  </div>
-                </Link>
+          <div className="shop-layout">
+            <aside className={`filters ${showFilters ? "show" : ""}`}>
+              <div className="filter-group">
+                <h3>Price</h3>
+                <input
+                  type="range"
+                  min={MIN_PRICE}
+                  max={MAX_PRICE}
+                  step={100}
+                  value={maxPrice}
+                  style={{ "--p": `${rangePercent}%` }}
+                  onChange={(e) => setMaxPrice(parseInt(e.target.value, 10))}
+                />
+                <p className="muted small">Up to KSh {maxPrice.toLocaleString()}</p>
               </div>
-            ))}
+              <button className="link-btn" onClick={resetAll}>Clear all filters</button>
+            </aside>
+
+            <div className="shop-results">
+              {filtered.length === 0 ? (
+                <div className="empty">
+                  <h2>No products found</h2>
+                  <p className="muted">Try a different search or clear your filters.</p>
+                  <button className="btn" onClick={resetAll}>Clear filters</button>
+                </div>
+              ) : (
+                <div className="prod-grid">
+                  {filtered.map((p) => (
+                    <ProductCard key={p.id} product={p} />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
-    </>
+        </>
+      )}
+    </div>
   );
 };
 
