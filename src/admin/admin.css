@@ -8,7 +8,7 @@
 .a-side{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:28px;padding:24px 16px;
   background:var(--choc);color:#e9dcc6}
 .a-brand{display:flex;align-items:baseline;gap:10px;padding:0 10px}
-.a-brand a{font-family:var(--serif);font-size:1.25rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cream)}
+.a-brand a{font-family:var(--serif);font-size:1.1rem;letter-spacing:.14em;white-space:nowrap;text-transform:uppercase;color:var(--cream)}
 .a-brand span{font-size:.75rem;color:var(--gold-soft)}
 .a-nav{display:flex;flex-direction:column;gap:2px}
 .a-nav a{display:flex;align-items:center;gap:12px;padding:10px;color:#d8c9b2;transition:background .2s,color .2s}
@@ -76,7 +76,7 @@ a.a-strong:hover{color:var(--accent);text-decoration:underline;text-underline-of
 .a-tile.link{transition:border-color .2s}
 .a-tile.link:hover{border-color:var(--ink-2)}
 .a-tile-label{font-size:.82rem;color:var(--ink-2)}
-.a-tile-value{font-family:var(--serif);font-size:2rem;line-height:1.15}
+.a-tile-value{font-family:var(--serif);font-size:clamp(1.45rem,2.3vw,2rem);white-space:nowrap;line-height:1.15}
 
 /* tables */
 .a-table-wrap{overflow-x:auto}
