@@ -1,9 +1,9 @@
 /* ============================================================
    Nula Leer — storefront styles
-   Fonts: Libre Caslon Display (large headings), Libre Caslon Text (small serif), Schibsted Grotesk (UI/body)
+   Fonts: Young Serif (large headings), Piazzolla (small serif), Host Grotesk (UI/body)
    Palette: neutral off-white base; chocolate, tan and gold from the NL leather badge
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Young+Serif&family=Piazzolla:ital,opsz,wght@0,8..30,400..700;1,8..30,400..700&family=Host+Grotesk:wght@400..700&display=swap');
 
 :root{
   --bg:#f1f0ec;
@@ -18,9 +18,9 @@
   --gold:#c99a4a;
   --gold-soft:#e6c88c;
   --cream:#f6ecdc;
-  --font:'Schibsted Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --serif:'Libre Caslon Display',Georgia,serif;
-  --serif-text:'Libre Caslon Text',Georgia,serif;
+  --font:'Host Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --serif:'Young Serif',Georgia,serif;
+  --serif-text:'Piazzolla',Georgia,serif;
   --maxw:1280px;
   --radius:0;
 }
@@ -39,8 +39,8 @@ body{
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 button{font-family:inherit;color:inherit}
-h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.02em;line-height:1.15}
-/* Caslon Display ships one weight; never fake a bold */
+h1,h2,h3,h4{margin:0;font-weight:600;line-height:1.15}
+/* Young Serif ships one weight; never fake a bold */
 body{font-synthesis:none}
 h1,.display{font-family:var(--serif);font-weight:600;letter-spacing:-.01em;line-height:1.02}
 p{margin:0}
