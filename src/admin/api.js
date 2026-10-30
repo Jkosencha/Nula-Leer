@@ -17,7 +17,7 @@
 import shopProducts from "../pages/Products";
 import { ORDER_STATUSES } from "../orders";
 
-const ORDERS_KEY = "admin.orders";
+const ORDERS_KEY = "admin.orders.v2"; // v2: 60 days of sample orders
 const PRODUCTS_KEY = "admin.products";
 
 const read = (key) => {
@@ -62,8 +62,8 @@ const seedOrders = () => {
   if (products.length === 0) return [];
 
   const orders = [];
-  for (let i = 0; i < 26; i++) {
-    const daysAgo = Math.floor(rand() * 30);
+  for (let i = 0; i < 58; i++) {
+    const daysAgo = Math.floor(rand() * 60);
     const created = new Date(Date.now() - daysAgo * 86400000 - Math.floor(rand() * 8) * 3600000);
     const who = Math.floor(rand() * SAMPLE_CUSTOMERS.length);
     const [firstName, lastName, area, fee] = SAMPLE_CUSTOMERS[who];
