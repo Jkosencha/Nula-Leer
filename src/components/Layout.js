@@ -13,7 +13,6 @@ const CheckoutLayout = ({ children }) => (
     <header className="header co-header">
       <div className="nav-inner">
         <Link to="/" className="brand">
-          <img src="/logo-small.png" alt="" width="34" height="34" />
           Nula Leer
         </Link>
         <span className="secure"><FiLock /> Secure checkout</span>

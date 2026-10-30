@@ -12,7 +12,6 @@ const Footer = () => (
     <div className="wrap footer-grid">
       <div className="footer-news">
         <Link to="/" className="brand">
-          <img src="/logo-small.png" alt="" width="34" height="34" />
           Nula Leer
         </Link>
         <p>Handmade leather goods from Nairobi, Kenya.</p>

@@ -53,7 +53,6 @@ const Navbar = () => {
         </button>
 
         <Link to="/" className="brand">
-          <img src="/logo-small.png" alt="" width="34" height="34" />
           Nula Leer
         </Link>
 
