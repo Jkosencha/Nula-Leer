@@ -1,9 +1,9 @@
 /* ============================================================
    Nula Leer — storefront styles
-   Fonts: Libre Caslon Display (large headings), Libre Caslon Text (small serif), Schibsted Grotesk (UI/body)
+   Fonts: Young Serif (large headings), Piazzolla (small serif), Host Grotesk (UI/body)
    Palette: neutral off-white base; chocolate, tan and gold from the NL leather badge
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Young+Serif&family=Piazzolla:ital,opsz,wght@0,8..30,400..700;1,8..30,400..700&family=Host+Grotesk:wght@400..700&display=swap');
 
 :root{
   --bg:#f1f0ec;
@@ -18,9 +18,9 @@
   --gold:#c99a4a;
   --gold-soft:#e6c88c;
   --cream:#f6ecdc;
-  --font:'Schibsted Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --serif:'Libre Caslon Display',Georgia,serif;
-  --serif-text:'Libre Caslon Text',Georgia,serif;
+  --font:'Host Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --serif:'Young Serif',Georgia,serif;
+  --serif-text:'Piazzolla',Georgia,serif;
   --maxw:1280px;
   --radius:0;
 }
@@ -39,8 +39,8 @@ body{
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 button{font-family:inherit;color:inherit}
-h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.02em;line-height:1.15}
-/* Caslon Display ships one weight; never fake a bold */
+h1,h2,h3,h4{margin:0;font-weight:600;line-height:1.15}
+/* Young Serif ships one weight; never fake a bold */
 body{font-synthesis:none}
 h1,.display{font-family:var(--serif);font-weight:600;letter-spacing:-.01em;line-height:1.02}
 p{margin:0}
@@ -106,9 +106,9 @@ main:focus{outline:none}
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .nav-inner{max-width:var(--maxw);margin:0 auto;padding:0 32px;height:68px;
   display:flex;align-items:center;gap:40px}
-.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif-text);font-size:1.35rem;font-weight:400;
-  letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
-.brand img{width:34px;height:34px}
+/* text-only wordmark until the real logo is ready */
+.brand{display:flex;align-items:center;font-family:var(--serif);font-size:1.6rem;font-weight:400;line-height:1;
+  letter-spacing:.18em;text-transform:uppercase;white-space:nowrap}
 .nav-links{display:flex;gap:28px;flex:1}
 .nav-links a{font-size:.92rem;color:var(--ink-2);padding:6px 0;border-bottom:1.5px solid transparent;transition:.2s}
 .nav-links a:hover,.nav-links a.active{color:var(--ink);border-bottom-color:var(--ink)}
@@ -780,6 +780,9 @@ form .co-title:not(:first-child){margin-top:44px}
 .policy-body .lead{font-size:1.08rem;color:var(--ink-2);margin-bottom:12px}
 .policy-body h2{font-family:var(--serif-text);font-size:1.3rem;font-weight:400;margin:36px 0 10px}
 .policy-body p{color:var(--ink-2);margin-bottom:12px}
+.policy-body .bullets{margin:0 0 14px;color:var(--ink-2)}
+.policy-body .bullets li{margin:6px 0}
+.policy-body .updated{margin-top:44px;padding-top:16px;border-top:1px solid var(--line)}
 .policy-body a{text-decoration:underline;text-underline-offset:3px}
 .fee-tables{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start}
 .fee-table{width:100%;border-collapse:collapse;font-size:.92rem}
@@ -889,9 +892,8 @@ form .co-title:not(:first-child){margin-top:44px}
   .hero::before{background:rgba(28,16,9,.72)}
 }
 @media(max-width:600px){
-  .brand{font-size:1rem;letter-spacing:.1em}
+  .brand{font-size:1.2rem;letter-spacing:.14em}
   .nav-actions .icon-btn{width:36px}
-  .brand img{width:28px;height:28px}
   .section{padding-top:56px}
   .craft{margin-top:64px;padding:64px 0}
   .craft-steps{grid-template-columns:1fr;gap:24px}

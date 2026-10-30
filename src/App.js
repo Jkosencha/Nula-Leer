@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
@@ -21,6 +21,9 @@ import OrderConfirmation from "./pages/OrderConfirmation";
 import Policy from "./pages/Policy";
 import { SHOP_OPEN } from "./config";
 import "./App.css";
+
+// the admin dashboard is loaded only when /admin is opened
+const AdminApp = lazy(() => import("./admin/AdminApp"));
 
 const NotFound = () => (
   <div className="wrap empty" style={{ padding: "120px 0" }}>
@@ -52,6 +55,14 @@ const App = () => (
               <Route path="/wishlist" element={<Layout><Wishlist /></Layout>} />
             </>
           )}
+          <Route
+            path="/admin/*"
+            element={
+              <Suspense fallback={<p style={{ padding: 32 }}>Loading…</p>}>
+                <AdminApp />
+              </Suspense>
+            }
+          />
           <Route path="*" element={<Layout><NotFound /></Layout>} />
         </Routes>
       </WishlistProvider>

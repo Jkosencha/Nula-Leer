@@ -85,8 +85,12 @@ const Checkout = () => {
   };
 
   // demo only: see the confirmation page with this checkout's details
-  const previewConfirmation = () => {
-    saveLastOrder(buildOrder());
+  const previewConfirmation = async () => {
+    const order = buildOrder();
+    saveLastOrder(order);
+    // so the order shows up in the admin dashboard (loaded only here)
+    const { saveOrder } = await import("../admin/api");
+    await saveOrder(order);
     navigate("/order/confirmation");
   };
 
