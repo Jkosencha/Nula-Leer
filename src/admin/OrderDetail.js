@@ -1,16 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FiArrowLeft, FiPhone, FiMail } from "react-icons/fi";
+import { ArrowLeft, Phone, Mail, Check } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { getOrder, updateOrderStatus, addOrderNote } from "./api";
-import { STATUS, StatusBadge, ksh, dateTime, customerName, waNumber } from "./ui";
+import { STATUS, FLOW, StatusBadge, ConfirmDialog, Avatar, ksh, dateTime, customerName, waNumber } from "./ui";
+
+// Where the order is in its journey, with the time each step was reached.
+const Progress = ({ order }) => {
+  const reachedAt = (s) => [...(order.history || [])].reverse().find((h) => h.status === s)?.at;
+  const current = FLOW.indexOf(order.status);
+  return (
+    <ol className="a-progress" aria-label="Order progress">
+      {FLOW.map((s, i) => {
+        const done = order.status !== "cancelled" && i <= current;
+        const at = reachedAt(s);
+        return (
+          <li key={s} className={`${done ? "done" : ""} ${i === current ? "current" : ""}`} aria-current={i === current ? "step" : undefined}>
+            <span className="a-progress-dot">{done && <Check size={12} strokeWidth={3} />}</span>
+            <span className="a-progress-label">{STATUS[s].label}</span>
+            <span className="a-progress-time">{at && done ? dateTime(at) : ""}</span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+};
 
 const OrderDetail = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(undefined);
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
+  const [confirmCancel, setConfirmCancel] = useState(false);
 
   useEffect(() => {
     getOrder(id).then(setOrder);
@@ -21,7 +43,7 @@ const OrderDetail = () => {
     return (
       <>
         <p>Order {id} wasn't found.</p>
-        <Link to="/admin/orders" className="a-link"><FiArrowLeft /> Back to orders</Link>
+        <Link to="/admin/orders" className="a-link"><ArrowLeft size={16} /> Back to orders</Link>
       </>
     );
   }
@@ -30,7 +52,6 @@ const OrderDetail = () => {
   const closed = ["delivered", "cancelled"].includes(order.status);
 
   const changeStatus = async (status) => {
-    if (status === "cancelled" && !window.confirm(`Cancel order ${order.id}?`)) return;
     setBusy(true);
     const updated = await updateOrderStatus(order.id, status);
     setOrder(updated);
@@ -47,8 +68,6 @@ const OrderDetail = () => {
 
   return (
     <>
-      <Link to="/admin/orders" className="a-link a-back"><FiArrowLeft /> Orders</Link>
-
       <div className="a-head">
         <div>
           <h1>Order {order.id}</h1>
@@ -58,7 +77,7 @@ const OrderDetail = () => {
         </div>
         {!closed && (
           <div className="a-head-actions">
-            <button className="a-btn ghost" disabled={busy} onClick={() => changeStatus("cancelled")}>
+            <button className="a-btn ghost" disabled={busy} onClick={() => setConfirmCancel(true)}>
               Cancel order
             </button>
             <button className="a-btn" disabled={busy} onClick={() => changeStatus(meta.next)}>
@@ -67,6 +86,14 @@ const OrderDetail = () => {
           </div>
         )}
       </div>
+
+      {order.status === "cancelled" ? (
+        <p className="a-notice">This order was cancelled. If the customer had paid, make sure they were refunded.</p>
+      ) : (
+        <section className="a-card">
+          <Progress order={order} />
+        </section>
+      )}
 
       <div className="a-grid-2 wide-left">
         <div className="a-stack">
@@ -135,16 +162,19 @@ const OrderDetail = () => {
         <div className="a-stack">
           <section className="a-card">
             <h2>Customer</h2>
-            <p className="a-strong">{customerName(order.customer)}</p>
+            <p className="a-person">
+              <Avatar person={order.customer} />
+              <span className="a-strong">{customerName(order.customer)}</span>
+            </p>
             <ul className="a-contact">
-              <li><FiPhone /><a href={`tel:${order.customer.phone}`}>{order.customer.phone}</a></li>
+              <li><Phone size={16} /><a href={`tel:${order.customer.phone}`}>{order.customer.phone}</a></li>
               <li>
                 <FaWhatsapp />
                 <a href={`https://wa.me/${waNumber(order.customer.phone)}`} target="_blank" rel="noreferrer">
                   Message on WhatsApp
                 </a>
               </li>
-              <li><FiMail /><a href={`mailto:${order.customer.email}`}>{order.customer.email}</a></li>
+              <li><Mail size={16} /><a href={`mailto:${order.customer.email}`}>{order.customer.email}</a></li>
             </ul>
           </section>
 
@@ -172,6 +202,16 @@ const OrderDetail = () => {
           </section>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmCancel}
+        onOpenChange={setConfirmCancel}
+        title={`Cancel order ${order.id}?`}
+        body="The order moves to Cancelled. If the customer has paid, refund them separately."
+        confirmLabel="Cancel order"
+        danger
+        onConfirm={() => changeStatus("cancelled")}
+      />
     </>
   );
 };

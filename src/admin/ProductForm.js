@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FiArrowLeft } from "react-icons/fi";
+import { ArrowLeft } from "lucide-react";
 import { getProduct, saveProduct, deleteProduct } from "./api";
 import { categories, collections, colorNames } from "../pages/Products";
+import { ConfirmDialog } from "./ui";
 
 const EMPTY = {
   name: "",
@@ -69,6 +70,7 @@ const ProductForm = () => {
   const isNew = !id;
   const [form, setForm] = useState(isNew ? EMPTY : null);
   const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     if (!isNew) getProduct(id).then((p) => setForm(p ? toForm(p) : false));
@@ -79,7 +81,7 @@ const ProductForm = () => {
     return (
       <>
         <p>Product not found.</p>
-        <Link to="/admin/products" className="a-link"><FiArrowLeft /> Back to products</Link>
+        <Link to="/admin/products" className="a-link"><ArrowLeft size={16} /> Back to products</Link>
       </>
     );
   }
@@ -96,7 +98,6 @@ const ProductForm = () => {
   };
 
   const remove = async () => {
-    if (!window.confirm(`Delete “${form.name}”? This can't be undone.`)) return;
     await deleteProduct(form.id);
     toast.info("Product deleted.");
     navigate("/admin/products");
@@ -104,7 +105,6 @@ const ProductForm = () => {
 
   return (
     <>
-      <Link to="/admin/products" className="a-link a-back"><FiArrowLeft /> Products</Link>
       <div className="a-head">
         <h1>{isNew ? "Add product" : form.name || "Edit product"}</h1>
       </div>
@@ -234,10 +234,20 @@ const ProductForm = () => {
         </div>
 
         <div className="a-form-bar">
-          {!isNew && <button type="button" className="a-btn danger" onClick={remove}>Delete product</button>}
+          {!isNew && <button type="button" className="a-btn danger" onClick={() => setConfirmDelete(true)}>Delete product</button>}
           <button type="submit" className="a-btn" disabled={saving}>{isNew ? "Add product" : "Save changes"}</button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        title={`Delete “${form.name}”?`}
+        body="It's removed from the dashboard and can't be brought back."
+        confirmLabel="Delete product"
+        danger
+        onConfirm={remove}
+      />
     </>
   );
 };
