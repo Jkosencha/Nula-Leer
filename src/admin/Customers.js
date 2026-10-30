@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Search, MessageCircle, Mail, Receipt } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
-import { FiSearch } from "react-icons/fi";
 import { listCustomers } from "./api";
-import { PageHead, ksh, shortDate, customerName, waNumber } from "./ui";
+import DataTable from "./DataTable";
+import { PageHead, RowMenu, Avatar, ksh, shortDate, customerName, waNumber } from "./ui";
 
 // Everyone who has ordered, grouped by phone number, biggest spenders first.
 const Customers = () => {
+  const navigate = useNavigate();
   const [customers, setCustomers] = useState(null);
   const [q, setQ] = useState("");
 
@@ -14,52 +16,96 @@ const Customers = () => {
     listCustomers().then(setCustomers);
   }, []);
 
-  if (!customers) return <p className="a-muted">Loading…</p>;
-
-  const term = q.trim().toLowerCase();
-  const shown = customers.filter(
-    (c) => !term || customerName(c).toLowerCase().includes(term) || c.phone.includes(term) || c.email.toLowerCase().includes(term)
+  const columns = useMemo(
+    () => [
+      {
+        id: "name",
+        header: "Customer",
+        accessorFn: (c) => customerName(c),
+        cell: ({ row }) => (
+          <span className="a-person">
+            <Avatar person={row.original} />
+            <span>
+              <Link to={`/admin/orders?q=${encodeURIComponent(row.original.phone)}`} className="a-strong">
+                {customerName(row.original)}
+              </Link>
+              <span className="a-sub">{row.original.email}</span>
+            </span>
+          </span>
+        ),
+      },
+      {
+        accessorKey: "phone",
+        header: "Phone",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <a
+            href={`https://wa.me/${waNumber(row.original.phone)}`}
+            target="_blank"
+            rel="noreferrer"
+            className="a-wa"
+            aria-label={`WhatsApp ${customerName(row.original)}`}
+          >
+            <FaWhatsapp /> {row.original.phone}
+          </a>
+        ),
+      },
+      { accessorKey: "area", header: "Area" },
+      { accessorKey: "orders", header: "Orders", meta: { align: "right" } },
+      { accessorKey: "spent", header: "Spent", cell: ({ getValue }) => ksh(getValue()), meta: { align: "right" } },
+      { accessorKey: "lastOrder", header: "Last order", cell: ({ getValue }) => shortDate(getValue()) },
+      {
+        id: "actions",
+        header: () => <span className="sr-only">Actions</span>,
+        enableSorting: false,
+        meta: { className: "a-col-menu" },
+        cell: ({ row }) => (
+          <RowMenu
+            label={`Actions for ${customerName(row.original)}`}
+            items={[
+              {
+                label: "See their orders",
+                icon: <Receipt size={15} />,
+                onSelect: () => navigate(`/admin/orders?q=${encodeURIComponent(row.original.phone)}`),
+              },
+              { label: "WhatsApp", icon: <MessageCircle size={15} />, href: `https://wa.me/${waNumber(row.original.phone)}` },
+              { label: "Email", icon: <Mail size={15} />, onSelect: () => (window.location.href = `mailto:${row.original.email}`) },
+            ]}
+          />
+        ),
+      },
+    ],
+    [navigate]
   );
+
+  const shown = useMemo(() => {
+    if (!customers) return [];
+    const term = q.trim().toLowerCase();
+    return customers.filter(
+      (c) => !term || customerName(c).toLowerCase().includes(term) || c.phone.includes(term) || c.email.toLowerCase().includes(term)
+    );
+  }, [customers, q]);
+
+  if (!customers) return <p className="a-muted">Loading…</p>;
 
   return (
     <>
-      <PageHead title="Customers" />
-      <label className="a-search">
-        <FiSearch />
-        <input type="search" placeholder="Search by name, phone or email" aria-label="Search customers" value={q} onChange={(e) => setQ(e.target.value)} />
-      </label>
-
+      <PageHead title="Customers" sub={`${customers.length} people have ordered`} />
       <section className="a-card flush">
-        {shown.length === 0 ? (
-          <p className="a-empty">No customers yet.</p>
-        ) : (
-          <div className="a-table-wrap">
-            <table className="a-table">
-              <thead>
-                <tr><th>Customer</th><th>Phone</th><th>Area</th><th>Orders</th><th className="num">Spent</th><th>Last order</th></tr>
-              </thead>
-              <tbody>
-                {shown.map((c) => (
-                  <tr key={c.phone}>
-                    <td>
-                      <Link to={`/admin/orders?q=${encodeURIComponent(c.phone)}`} className="a-strong">{customerName(c)}</Link>
-                      <span className="a-sub">{c.email}</span>
-                    </td>
-                    <td>
-                      <a href={`https://wa.me/${waNumber(c.phone)}`} target="_blank" rel="noreferrer" className="a-wa" aria-label={`WhatsApp ${customerName(c)}`}>
-                        <FaWhatsapp /> {c.phone}
-                      </a>
-                    </td>
-                    <td>{c.area}</td>
-                    <td>{c.orders}</td>
-                    <td className="num">{ksh(c.spent)}</td>
-                    <td>{shortDate(c.lastOrder)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <div className="a-toolbar">
+          <label className="a-search">
+            <Search size={16} />
+            <input type="search" placeholder="Search by name, phone or email" aria-label="Search customers" value={q} onChange={(e) => setQ(e.target.value)} />
+          </label>
+        </div>
+        <DataTable
+          data={shown}
+          columns={columns}
+          getRowId={(c) => c.phone}
+          label="Customers"
+          initialSort={[{ id: "spent", desc: true }]}
+          empty={q ? `No customers match “${q}”.` : "No customers yet."}
+        />
       </section>
     </>
   );
