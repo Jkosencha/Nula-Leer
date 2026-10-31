@@ -1,7 +1,9 @@
 // Admin data layer. Every screen in the dashboard reads and writes through these
-// functions, which return promises like real API calls. For now they're backed by
-// the browser's localStorage (seeded with sample data); when the backend exists,
-// swap each body for a fetch() to the matching endpoint and the screens won't change.
+// functions, which return promises like real API calls.
+//
+// Orders: from the real backend when it's configured (backend.js), otherwise sample
+// data kept in this browser's localStorage. Products are still sample/local for now:
+// they move to the database once real products and photos exist.
 //
 //   listOrders({ status, q })      GET    /api/orders?status=&q=
 //   getOrder(id)                   GET    /api/orders/:id
@@ -16,6 +18,9 @@
 
 import shopProducts from "../pages/Products";
 import { ORDER_STATUSES } from "../orders";
+import { BACKEND, fetchOrders, fetchOrder, changeOrder } from "./backend";
+
+export { BACKEND };
 
 const ORDERS_KEY = "admin.orders.v2"; // v2: 60 days of sample orders
 const PRODUCTS_KEY = "admin.products";
@@ -142,9 +147,10 @@ const allProducts = () => {
 
 // ---------- orders ----------
 
-export const listOrders = ({ status = "all", q = "" } = {}) => {
+export const listOrders = async ({ status = "all", q = "" } = {}) => {
   const term = q.trim().toLowerCase();
-  const orders = allOrders().filter(
+  const source = BACKEND ? await fetchOrders() : allOrders();
+  const orders = source.filter(
     (o) =>
       (status === "all" || o.status === status) &&
       (!term ||
@@ -156,10 +162,11 @@ export const listOrders = ({ status = "all", q = "" } = {}) => {
   return respond(orders);
 };
 
-export const getOrder = (id) => respond(allOrders().find((o) => o.id === id) || null);
+export const getOrder = (id) => (BACKEND ? fetchOrder(id) : respond(allOrders().find((o) => o.id === id) || null));
 
 // New orders from checkout (orders.js shape); history and notes are added here.
 export const saveOrder = (order) => {
+  if (BACKEND) return Promise.resolve(order); // real orders are saved by the server at checkout
   const orders = allOrders().filter((o) => o.id !== order.id);
   const saved = {
     ...order,
@@ -172,6 +179,7 @@ export const saveOrder = (order) => {
 
 export const updateOrderStatus = (id, status, note = "") => {
   if (!ORDER_STATUSES.includes(status)) return Promise.reject(new Error(`Unknown status: ${status}`));
+  if (BACKEND) return changeOrder({ id, status, note });
   let updated = null;
   const orders = allOrders().map((o) => {
     if (o.id !== id) return o;
@@ -188,6 +196,7 @@ export const updateOrderStatus = (id, status, note = "") => {
 };
 
 export const addOrderNote = (id, text) => {
+  if (BACKEND) return changeOrder({ id, addNote: text });
   let updated = null;
   const orders = allOrders().map((o) => {
     if (o.id !== id) return o;
@@ -219,9 +228,9 @@ export const deleteProduct = (id) => {
 
 // ---------- customers (built from orders) ----------
 
-export const listCustomers = () => {
+export const listCustomers = async () => {
   const byPhone = new Map();
-  allOrders().forEach((o) => {
+  (BACKEND ? await fetchOrders() : allOrders()).forEach((o) => {
     const key = o.customer.phone;
     const c = byPhone.get(key) || { ...o.customer, orders: 0, spent: 0, lastOrder: o.createdAt, area: o.delivery.area };
     c.orders += 1;

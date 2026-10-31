@@ -13,6 +13,7 @@ import {
   PanelLeftOpen,
   Search,
   RotateCcw,
+  LogOut,
 } from "lucide-react";
 import Overview from "./Overview";
 import Orders from "./Orders";
@@ -21,7 +22,9 @@ import Products from "./Products";
 import ProductForm from "./ProductForm";
 import Customers from "./Customers";
 import CommandMenu from "./CommandMenu";
-import { listOrders, resetSampleData } from "./api";
+import Login from "./Login";
+import { listOrders, resetSampleData, BACKEND } from "./api";
+import { supabase } from "./backend";
 import { ConfirmDialog } from "./ui";
 import usePageTitle from "../usePageTitle";
 import "./admin.css";
@@ -48,7 +51,7 @@ const readCollapsed = () => {
   }
 };
 
-const SideNav = ({ collapsed, counts, onReset }) => (
+const SideNav = ({ collapsed, counts, onReset, email }) => (
   <>
     <div className="a-brand">
       <Link to="/admin" aria-label="Nula Leer admin home">
@@ -86,7 +89,15 @@ const SideNav = ({ collapsed, counts, onReset }) => (
     </nav>
 
     <div className="a-side-foot">
-      {!collapsed && (
+      {email && !collapsed && (
+        <div className="a-user">
+          <span className="a-user-email" title={email}>{email}</span>
+          <button className="a-side-btn" onClick={() => supabase.auth.signOut()}>
+            <LogOut size={14} /> Sign out
+          </button>
+        </div>
+      )}
+      {!email && !collapsed && (
         <div className="a-preview-card">
           <p className="a-strong">Preview mode</p>
           <p>Sample orders kept in this browser. Live orders and sign-in come with the backend.</p>
@@ -104,7 +115,7 @@ const SideNav = ({ collapsed, counts, onReset }) => (
 );
 
 // The whole admin area. Not linked from the shop; reached at /admin.
-const AdminApp = () => {
+const AdminApp = ({ email }) => {
   usePageTitle("Admin");
   const { pathname } = useLocation();
   const [collapsed, setCollapsed] = useState(readCollapsed);
@@ -157,7 +168,7 @@ const AdminApp = () => {
     <Tooltip.Provider delayDuration={200}>
       <div className={`admin ${collapsed ? "collapsed" : ""}`}>
         <aside className="a-side">
-          <SideNav collapsed={collapsed} counts={counts} onReset={() => setResetOpen(true)} />
+          <SideNav collapsed={collapsed} counts={counts} email={email} onReset={() => setResetOpen(true)} />
         </aside>
 
         {/* phones: the same navigation in a sheet */}
@@ -166,7 +177,7 @@ const AdminApp = () => {
             <Dialog.Overlay className="a-overlay" />
             <Dialog.Content className="a-sheet" aria-describedby={undefined}>
               <Dialog.Title className="sr-only">Menu</Dialog.Title>
-              <SideNav collapsed={false} counts={counts} onReset={() => setResetOpen(true)} />
+              <SideNav collapsed={false} counts={counts} email={email} onReset={() => setResetOpen(true)} />
             </Dialog.Content>
           </Dialog.Portal>
         </Dialog.Root>
@@ -233,4 +244,28 @@ const AdminApp = () => {
   );
 };
 
-export default AdminApp;
+// With a backend, the dashboard opens only for signed-in admins; without one it
+// runs on sample data with no sign-in.
+const AdminGate = () => {
+  const [auth, setAuth] = useState(BACKEND ? { loading: true } : { email: null, allowed: true });
+
+  useEffect(() => {
+    if (!BACKEND) return undefined;
+    const check = async (session) => {
+      if (!session) return setAuth({ allowed: false });
+      // the admins table only returns rows to admins (supabase/schema.sql)
+      const { data } = await supabase.from("admins").select("email").limit(1);
+      setAuth({ email: session.user.email, allowed: data?.length > 0, denied: !data?.length });
+    };
+    supabase.auth.getSession().then(({ data }) => check(data.session));
+    // deferred: Supabase calls made inside this listener can stall
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => setTimeout(() => check(session), 0));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  if (auth.loading) return <div className="a-login"><p className="a-muted">Loading…</p></div>;
+  if (!auth.allowed) return <Login denied={auth.denied} />;
+  return <AdminApp email={auth.email} />;
+};
+
+export default AdminGate;

@@ -1,13 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { LIVE } from "../config";
+import { deliveryFee } from "../shipping";
+import { track } from "../analytics";
 
 export const CartContext = createContext();
 
-export const SHIPPING_OPTIONS = {
-  Nairobi: { Westlands: 200, ThikaRoad: 500, CBD: 150, Karen: 250, Ngong: 100, Kikuyu: 200, Kiambu: 300 },
-  Mombasa: { Mombasa: 1300, Lamu: 1200, Malindi: 1500, Kilifi: 2000, Ukunda: 2000 },
-  Others: { Nakuru: 350, Kisumu: 400, Eldoret: 1800, Muranga: 1000 },
-};
+export { SHIPPING_OPTIONS } from "../shipping";
 
 const COUPONS = { SAVE100: 100 };
 
@@ -58,6 +56,7 @@ export const CartProvider = ({ children }) => {
 
   // add several products in one go (e.g. a whole collection), opening the drawer once
   const addManyToCart = (list) => {
+    list.forEach((p) => track("Add to cart", { product: p.name }));
     setCartItems((prev) =>
       list.reduce((items, product) => {
         const qty = product.quantity && product.quantity > 0 ? product.quantity : 1;
@@ -104,11 +103,7 @@ export const CartProvider = ({ children }) => {
 
   const selectShipping = (town) => {
     setShippingLocation(town);
-    let price = 0;
-    Object.values(SHIPPING_OPTIONS).forEach((towns) => {
-      if (towns[town]) price = towns[town];
-    });
-    setShippingCost(price);
+    setShippingCost(deliveryFee(town) || 0);
   };
 
   // returns false when the code isn't recognised
