@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { Camera, Trash2, Lock, Eye, EyeOff, LogOut, ShieldCheck, Mail, User } from "lucide-react";
 import { useProfile, saveName, savePhoto, removePhoto, changePassword, signOut } from "./account";
@@ -36,6 +36,11 @@ const Profile = () => {
   const [name, setName] = useState(profile?.name || "");
   const [busy, setBusy] = useState("");
   const [pw, setPw] = useState({ current: "", next: "", confirm: "" });
+
+  // the profile loads after the page opens; fill the name in once it arrives
+  useEffect(() => {
+    if (profile?.name) setName(profile.name);
+  }, [profile?.name]);
 
   if (!profile) return <p className="a-muted">Loading…</p>;
 
