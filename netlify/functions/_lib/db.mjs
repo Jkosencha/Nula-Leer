@@ -6,8 +6,9 @@ let client;
 
 export const db = () => {
   if (!client) {
-    const url = process.env.SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    // only the origin, in case the URL was pasted with /rest/v1/ or a trailing slash
+    const url = process.env.SUPABASE_URL && new URL(process.env.SUPABASE_URL.trim()).origin;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
     if (!url || !key) throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set");
     client = createClient(url, key, { auth: { persistSession: false } });
   }
