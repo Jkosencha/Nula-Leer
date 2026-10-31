@@ -19,27 +19,30 @@ const Tip = ({ active, payload }) => {
   );
 };
 
+// Paid (not cancelled) sales per day for the last `days` days, oldest first.
+export const dailySales = (orders, days) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Array.from({ length: days }, (_, i) => {
+    const start = new Date(today.getTime() - (days - 1 - i) * DAY);
+    const end = start.getTime() + DAY;
+    const dayOrders = orders.filter((o) => {
+      const t = new Date(o.createdAt).getTime();
+      return o.status !== "cancelled" && o.payment.status === "paid" && t >= start.getTime() && t < end;
+    });
+    return {
+      label: shortDate(start.toISOString()),
+      sales: dayOrders.reduce((s, o) => s + o.totals.total, 0),
+      orders: dayOrders.length,
+    };
+  });
+};
+
 // Daily sales (paid, not cancelled) over the chosen range. One series, so no legend: the title names it.
 const SalesChart = ({ orders, days }) => {
   const [asTable, setAsTable] = useState(false);
 
-  const data = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return Array.from({ length: days }, (_, i) => {
-      const start = new Date(today.getTime() - (days - 1 - i) * DAY);
-      const end = start.getTime() + DAY;
-      const dayOrders = orders.filter((o) => {
-        const t = new Date(o.createdAt).getTime();
-        return o.status !== "cancelled" && o.payment.status === "paid" && t >= start.getTime() && t < end;
-      });
-      return {
-        label: shortDate(start.toISOString()),
-        sales: dayOrders.reduce((s, o) => s + o.totals.total, 0),
-        orders: dayOrders.length,
-      };
-    });
-  }, [orders, days]);
+  const data = useMemo(() => dailySales(orders, days), [orders, days]);
 
   const total = data.reduce((s, d) => s + d.sales, 0);
 
