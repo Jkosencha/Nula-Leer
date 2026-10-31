@@ -643,3 +643,8 @@ html[data-admin-theme="dark"] .a-menu-ic svg{color:#f0c674}
 html[data-admin-theme="dark"] .a-menu-item.danger,html[data-admin-theme="dark"] .a-menu-item.danger svg{color:#f0a493}
 html[data-admin-theme="dark"] .a-menu-item.danger[data-highlighted]{background:rgba(192,83,63,.18)}
 html[data-admin-theme="dark"] .a-overlay{background:rgba(0,0,0,.55)}
+
+/* overview: three cards in a row under the two columns */
+.a-row-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}
+@media(max-width:1180px){.a-row-3{grid-template-columns:1fr 1fr}.a-row-3 > :last-child{grid-column:1 / -1}}
+@media(max-width:800px){.a-row-3{grid-template-columns:1fr}}
