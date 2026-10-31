@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { LIVE } from "../config";
 import { deliveryFee } from "../shipping";
+import { track } from "../analytics";
 
 export const CartContext = createContext();
 
@@ -55,6 +56,7 @@ export const CartProvider = ({ children }) => {
 
   // add several products in one go (e.g. a whole collection), opening the drawer once
   const addManyToCart = (list) => {
+    list.forEach((p) => track("Add to cart", { product: p.name }));
     setCartItems((prev) =>
       list.reduce((items, product) => {
         const qty = product.quantity && product.quantity > 0 ? product.quantity : 1;
