@@ -12,10 +12,13 @@ import {
   ShoppingBag,
   XCircle,
   Sparkles,
+  Users,
+  Plus,
 } from "lucide-react";
 import { listOrders, listProducts } from "./api";
 import { availability } from "../availability";
 import { categoryName } from "../pages/Products";
+import { DEMO } from "../config";
 import ProductImage from "../components/ProductImage";
 import SalesChart, { dailySales } from "./SalesChart";
 import DataTable from "./DataTable";
@@ -121,7 +124,18 @@ const Overview = () => {
       .sort((a, b) => b.at.localeCompare(a.at))
       .slice(0, 7);
 
+    const placed = orders.filter((o) => inRange(o, now - days * DAY, now + 1));
+    const split = [
+      { key: "delivered", label: "Delivered", count: placed.filter((o) => o.status === "delivered").length },
+      { key: "moving", label: "In progress", count: placed.filter((o) => ["paid", "processing", "shipped"].includes(o.status)).length },
+      { key: "waiting", label: "Awaiting payment", count: placed.filter((o) => o.status === "pending_payment").length },
+      { key: "off", label: "Cancelled", count: placed.filter((o) => o.status === "cancelled").length },
+    ];
+
     return {
+      placed: placed.length,
+      split,
+      customers: new Set(orders.map((o) => o.customer.phone)).size,
       sales: sum(cur),
       salesBefore: sum(prev),
       count: cur.length,
@@ -147,204 +161,223 @@ const Overview = () => {
   const productOf = (id) => products.find((p) => String(p.id) === String(id));
   const today = new Date().toLocaleDateString("en-KE", { weekday: "long", day: "numeric", month: "long" });
 
-  const attention = [
-    {
-      icon: PackageCheck,
-      count: toPrepare.length,
-      label: toPrepare.length === 1 ? "order to prepare and send" : "orders to prepare and send",
-      to: "/admin/orders?status=paid",
-      action: "Open",
-      tone: "gold",
-    },
-    {
-      icon: Clock,
-      count: awaiting.length,
-      label: "awaiting payment",
-      to: "/admin/orders?status=pending_payment",
-      action: "Follow up",
-    },
-    {
-      icon: AlertTriangle,
-      count: lowStock.length,
-      label: lowStock.length === 1 ? "product sold out or low" : "products sold out or low",
-      to: "/admin/products",
-      action: "Restock",
-    },
+  const tiles = [
+    { icon: PackageCheck, tone: "tan", label: "To prepare", value: toPrepare.length, to: "/admin/orders?status=paid" },
+    { icon: Clock, tone: "gold", label: "Awaiting payment", value: awaiting.length, to: "/admin/orders?status=pending_payment" },
+    { icon: AlertTriangle, tone: "oxblood", label: "Sold out or low", value: lowStock.length, to: "/admin/products" },
+    { icon: Users, tone: "olive", label: "Customers", value: stats.customers, to: "/admin/customers" },
   ];
 
   return (
     <>
-      {/* leather header: the period at a glance */}
-      <section className="a-hero">
-        <div className="a-hero-top">
-          <div>
-            <h1>{greeting()}, {ADMIN_USER.firstName}</h1>
-            <p className="a-hero-sub">{today}</p>
-          </div>
-          <div className="a-segment dark" role="group" aria-label="Date range">
-            {RANGES.map((r) => (
-              <button key={r} aria-pressed={days === r} onClick={() => setDays(r)}>
-                Last {r} days
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="a-hero-body">
-          <div className="a-hero-figure">
-            <span className="a-hero-label">Sales, last {days} days</span>
-            <span className="a-hero-value">{ksh(stats.sales)}</span>
-            <span className="a-hero-delta">
-              <Delta now={stats.sales} before={stats.salesBefore} /> on the previous {days} days
-            </span>
-          </div>
-          <div className="a-hero-spark" aria-hidden="true">
-            <ResponsiveContainer width="100%" height={120}>
-              <AreaChart data={stats.daily} margin={{ top: 8, right: 0, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="heroFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#e6c88c" stopOpacity={0.45} />
-                    <stop offset="100%" stopColor="#e6c88c" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <Tooltip content={<SparkTip />} cursor={{ stroke: "rgba(230,200,140,.5)", strokeDasharray: "3 3" }} isAnimationActive={false} />
-                <Area
-                  type="monotone"
-                  dataKey="sales"
-                  stroke="#e6c88c"
-                  strokeWidth={2}
-                  fill="url(#heroFill)"
-                  activeDot={{ r: 4, fill: "#e6c88c", stroke: "#2e1d12", strokeWidth: 2 }}
-                  isAnimationActive={false}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <dl className="a-hero-stats">
-          <div>
-            <dt>Paid orders</dt>
-            <dd>{stats.count}</dd>
-            <Delta now={stats.count} before={stats.countBefore} />
-          </div>
-          <div>
-            <dt>Average order</dt>
-            <dd>{stats.count ? ksh(stats.avg) : "—"}</dd>
-            <Delta now={stats.avg} before={stats.avgBefore} />
-          </div>
-          <div>
-            <dt>Pieces sold</dt>
-            <dd>{stats.units}</dd>
-            <span className="a-delta flat">handmade and sent</span>
-          </div>
-        </dl>
-      </section>
-
-      {/* things to act on today */}
-      <div className="a-attention">
-        {attention.map((a) => {
-          const Icon = a.icon;
-          return (
-            <Link key={a.label} to={a.to} className={`a-attn ${a.tone || ""} ${a.count === 0 ? "clear" : ""}`}>
-              <span className="a-attn-icon"><Icon size={20} strokeWidth={1.75} /></span>
-              <span className="a-attn-text">
-                <span className="a-attn-count">{a.count}</span>
-                <span>{a.count === 0 ? `Nothing ${a.label.replace(/^orders? |^products? /, "")}` : a.label}</span>
-              </span>
-              <span className="a-attn-go">{a.action} <ArrowRight size={14} /></span>
-            </Link>
-          );
-        })}
-      </div>
-
-      <div className="a-grid-2">
-        <SalesChart orders={orders} days={days} />
-
-        <section className="a-card">
-          <div className="a-card-head">
+      <div className="a-ov">
+        <div className="a-ov-main">
+        {/* leather header: the period at a glance */}
+        <section className="a-hero">
+          <div className="a-hero-top">
             <div>
-              <h2>Recent activity</h2>
-              <p className="a-muted small">Orders and payments as they happen</p>
+              <h1>{greeting()}, {ADMIN_USER.firstName}</h1>
+              <p className="a-hero-sub">{today}</p>
+            </div>
+            <div className="a-segment dark" role="group" aria-label="Date range">
+              {RANGES.map((r) => (
+                <button key={r} aria-pressed={days === r} onClick={() => setDays(r)}>
+                  Last {r} days
+                </button>
+              ))}
             </div>
           </div>
-          <ol className="a-feed">
-            {stats.activity.map((e, k) => {
-              const ev = EVENT[e.status];
-              const Icon = ev.icon;
+
+          <div className="a-hero-body">
+            <div className="a-hero-figure">
+              <span className="a-hero-label">Sales, last {days} days</span>
+              <span className="a-hero-value">{ksh(stats.sales)}</span>
+              <span className="a-hero-delta">
+                <Delta now={stats.sales} before={stats.salesBefore} /> on the previous {days} days
+              </span>
+            </div>
+            <div className="a-hero-spark" aria-hidden="true">
+              <ResponsiveContainer width="100%" height={120}>
+                <AreaChart data={stats.daily} margin={{ top: 8, right: 0, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="heroFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#e6c88c" stopOpacity={0.45} />
+                      <stop offset="100%" stopColor="#e6c88c" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <Tooltip content={<SparkTip />} cursor={{ stroke: "rgba(230,200,140,.5)", strokeDasharray: "3 3" }} isAnimationActive={false} />
+                  <Area
+                    type="monotone"
+                    dataKey="sales"
+                    stroke="#e6c88c"
+                    strokeWidth={2}
+                    fill="url(#heroFill)"
+                    activeDot={{ r: 4, fill: "#e6c88c", stroke: "#2e1d12", strokeWidth: 2 }}
+                    isAnimationActive={false}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <dl className="a-hero-stats">
+            <div>
+              <dt>Paid orders</dt>
+              <dd>{stats.count}</dd>
+              <Delta now={stats.count} before={stats.countBefore} />
+            </div>
+            <div>
+              <dt>Average order</dt>
+              <dd>{stats.count ? ksh(stats.avg) : "—"}</dd>
+              <Delta now={stats.avg} before={stats.avgBefore} />
+            </div>
+            <div>
+              <dt>Pieces sold</dt>
+              <dd>{stats.units}</dd>
+              <span className="a-delta flat">handmade and sent</span>
+            </div>
+          </dl>
+        </section>
+
+          <SalesChart orders={orders} days={days} />
+
+          <section className="a-card">
+            <div className="a-card-head">
+              <div>
+                <h2>Best sellers</h2>
+                <p className="a-muted small">By takings, last {days} days</p>
+              </div>
+              <Link to="/admin/products" className="a-link small">Products</Link>
+            </div>
+            {stats.top.length === 0 ? (
+              <p className="a-muted">No sales in this period.</p>
+            ) : (
+              <ol className="a-rank">
+                {stats.top.map((p, i) => {
+                  const product = productOf(p.id);
+                  return (
+                    <li key={p.id}>
+                      <span className="a-rank-thumb">
+                        {product ? <ProductImage src={product.image} product={product} alt="" eager /> : null}
+                        <span className="a-rank-n">{i + 1}</span>
+                      </span>
+                      <span className="a-rank-body">
+                        <span className="a-rank-row">
+                          <Link to={`/admin/products/${p.id}`} className="a-strong">{p.name}</Link>
+                          <span className="a-strong">{ksh(p.sales)}</span>
+                        </span>
+                        <span className="a-meter thin"><span style={{ width: `${(p.sales / topMax) * 100}%` }} /></span>
+                        <span className="a-muted small">{p.units} sold</span>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
+            )}
+          </section>
+        </div>
+
+        <div className="a-ov-side">
+          <section className="a-card">
+            <div className="a-card-head">
+              <div>
+                <h2>Orders, last {days} days</h2>
+                <p className="a-muted small">{stats.placed} placed</p>
+              </div>
+              <Link to="/admin/orders" className="a-link small">View all</Link>
+            </div>
+            <div className="a-split" role="img" aria-label={stats.split.map((x) => `${x.label} ${x.count}`).join(", ")}>
+              {stats.split.filter((x) => x.count > 0).map((x) => (
+                <span key={x.key} className={`a-split-seg ${x.key}`} style={{ flexGrow: x.count }} />
+              ))}
+            </div>
+            <dl className="a-split-legend">
+              {stats.split.map((x) => (
+                <div key={x.key}>
+                  <dt><span className={`a-split-dot ${x.key}`} />{x.label}</dt>
+                  <dd>{x.count}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+
+          <div className="a-mini-tiles">
+            {tiles.map((t) => {
+              const Icon = t.icon;
               return (
-                <li key={k} className={`s-${e.status}`}>
-                  <span className="a-feed-icon"><Icon size={15} strokeWidth={1.9} /></span>
-                  <Link to={`/admin/orders/${e.order.id}`} className="a-feed-text">{ev.text(e.order)}</Link>
-                  <span className="a-feed-time">{ago(e.at)}</span>
-                </li>
+                <Link key={t.label} to={t.to} className="a-mini">
+                  <span className={`a-mini-icon ${t.tone}`}><Icon size={18} strokeWidth={1.9} /></span>
+                  <span className="a-mini-label">{t.label}</span>
+                  <span className="a-mini-value">{t.value}</span>
+                </Link>
               );
             })}
-          </ol>
-        </section>
-      </div>
-
-      <div className="a-grid-2 even">
-        <section className="a-card">
-          <div className="a-card-head">
-            <div>
-              <h2>Best sellers</h2>
-              <p className="a-muted small">By takings, last {days} days</p>
-            </div>
-            <Link to="/admin/products" className="a-link small">Products</Link>
           </div>
-          {stats.top.length === 0 ? (
-            <p className="a-muted">No sales in this period.</p>
-          ) : (
-            <ol className="a-rank">
-              {stats.top.map((p, i) => {
-                const product = productOf(p.id);
+
+          <section className="a-promo">
+            {DEMO ? (
+              <>
+                <h2>Add your real pieces before launch</h2>
+                <p>The shop is showing sample products. Swap in your own pieces and photos when they're ready.</p>
+                <Link to="/admin/products/new" className="a-promo-btn"><Plus size={15} /> Add a product</Link>
+              </>
+            ) : (
+              <>
+                <h2>See the shop the way customers do</h2>
+                <p>Check new pieces, prices and photos look right on the live site.</p>
+                <a href="/" target="_blank" rel="noreferrer" className="a-promo-btn">Open the shop <ArrowRight size={15} /></a>
+              </>
+            )}
+          </section>
+
+          <section className="a-card">
+            <div className="a-card-head">
+              <div>
+                <h2>Recent activity</h2>
+                <p className="a-muted small">Orders and payments as they happen</p>
+              </div>
+            </div>
+            <ol className="a-feed">
+              {stats.activity.map((e, k) => {
+                const ev = EVENT[e.status];
+                const Icon = ev.icon;
                 return (
-                  <li key={p.id}>
-                    <span className="a-rank-thumb">
-                      {product ? <ProductImage src={product.image} product={product} alt="" eager /> : null}
-                      <span className="a-rank-n">{i + 1}</span>
-                    </span>
-                    <span className="a-rank-body">
-                      <span className="a-rank-row">
-                        <Link to={`/admin/products/${p.id}`} className="a-strong">{p.name}</Link>
-                        <span className="a-strong">{ksh(p.sales)}</span>
-                      </span>
-                      <span className="a-meter thin"><span style={{ width: `${(p.sales / topMax) * 100}%` }} /></span>
-                      <span className="a-muted small">{p.units} sold</span>
-                    </span>
+                  <li key={k} className={`s-${e.status}`}>
+                    <span className="a-feed-icon"><Icon size={15} strokeWidth={1.9} /></span>
+                    <Link to={`/admin/orders/${e.order.id}`} className="a-feed-text">{ev.text(e.order)}</Link>
+                    <span className="a-feed-time">{ago(e.at)}</span>
                   </li>
                 );
               })}
             </ol>
-          )}
-        </section>
+          </section>
 
-        <section className="a-card">
-          <div className="a-card-head">
-            <div>
-              <h2>Sales by category</h2>
-              <p className="a-muted small">Last {days} days</p>
+          <section className="a-card">
+            <div className="a-card-head">
+              <div>
+                <h2>Sales by category</h2>
+                <p className="a-muted small">Last {days} days</p>
+              </div>
             </div>
-          </div>
-          {stats.categories.length === 0 ? (
-            <p className="a-muted">No sales in this period.</p>
-          ) : (
-            <ul className="a-meter-list">
-              {stats.categories.map((c) => (
-                <li key={c.slug}>
-                  <Link to={`/admin/products`}>
-                    <span className="a-meter-label">{categoryName(c.slug)}</span>
-                    <span className="a-meter-value">
-                      {ksh(c.sales)} <span className="a-muted small">· {Math.round((c.sales / catTotal) * 100)}%</span>
-                    </span>
-                    <span className="a-meter"><span style={{ width: `${(c.sales / catMax) * 100}%` }} /></span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+            {stats.categories.length === 0 ? (
+              <p className="a-muted">No sales in this period.</p>
+            ) : (
+              <ul className="a-meter-list">
+                {stats.categories.map((c) => (
+                  <li key={c.slug}>
+                    <Link to={`/admin/products`}>
+                      <span className="a-meter-label">{categoryName(c.slug)}</span>
+                      <span className="a-meter-value">
+                        {ksh(c.sales)} <span className="a-muted small">· {Math.round((c.sales / catTotal) * 100)}%</span>
+                      </span>
+                      <span className="a-meter"><span style={{ width: `${(c.sales / catMax) * 100}%` }} /></span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
       </div>
 
       <section className="a-card flush">
