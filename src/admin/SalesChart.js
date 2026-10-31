@@ -3,7 +3,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { ksh, shortDate } from "./ui";
 
 const DAY = 86400000;
-const INK = { accent: "#9c5f27", hover: "#7d4a1d", grid: "#e9e5dd", base: "#cfc8bc", muted: "#735f4c" };
+const INK = { accent: "#a8782a", hover: "#8d6a2f", grid: "rgba(120,110,95,.16)", base: "rgba(120,110,95,.35)", muted: "#735f4c" }; // gold: 3.5:1 on the glass
 
 const tickLabel = (v) => (v >= 1000 ? `${Math.round(v / 1000)}K` : v);
 
@@ -96,7 +96,7 @@ const SalesChart = ({ orders, days }) => {
                 width={40}
                 allowDecimals={false}
               />
-              <Tooltip content={<Tip />} cursor={{ fill: "rgba(156,95,39,.08)" }} isAnimationActive={false} />
+              <Tooltip content={<Tip />} cursor={{ fill: "rgba(255,255,255,.5)" }} isAnimationActive={false} />
               <Bar
                 dataKey="sales"
                 fill={INK.accent}
