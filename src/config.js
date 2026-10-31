@@ -18,7 +18,7 @@ export const LIVE = {
 };
 
 export const CONTACT = {
-  email: "kosenchajennifer@gmail.com",
+  email: "nulaleer.ke@gmail.com",
   phone: "+254704239554",
   phoneDisplay: "0704 239 554",
   location: "Nairobi, Kenya",
