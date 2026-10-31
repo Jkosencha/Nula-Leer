@@ -41,6 +41,20 @@
 .a-viewshop:hover{color:#fff}
 .collapsed .a-viewshop{justify-content:center;padding:0}
 
+.a-user{display:flex;flex-direction:column;gap:2px;padding:12px 10px;border-top:1px solid rgba(230,200,140,.18);font-size:.8rem;color:#cdbba3}
+.a-user-email{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff}
+.a-user .a-side-btn{margin-top:4px}
+
+/* sign-in */
+.a-login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;
+  background:linear-gradient(180deg,rgba(38,24,15,.9),rgba(30,19,12,.96)),var(--choc) var(--leather) center/cover}
+.a-login-card{width:min(400px,100%);padding:32px 28px;background:var(--surface);display:flex;flex-direction:column;gap:6px}
+.a-login-card h1{font-family:var(--serif);font-weight:400;font-size:2rem;margin:4px 0 0}
+.a-login-card > .a-muted{margin-bottom:18px}
+.a-login-card .a-btn{margin-top:6px}
+.a-login-brand{font-family:var(--serif);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.a-login-error{padding:10px 12px;margin-bottom:10px;background:#f8e9e6;color:#86281b;font-size:.88rem}
+
 /* phone sheet */
 .a-sheet{position:fixed;left:0;top:0;bottom:0;width:min(280px,86vw);z-index:60;animation:a-slide .22s ease-out}
 @keyframes a-slide{from{transform:translateX(-100%)}to{transform:none}}
