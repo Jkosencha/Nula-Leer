@@ -522,3 +522,124 @@ th[aria-sort] .a-sort{color:var(--ink)}
   .a-mini{padding:12px}
   .a-mini-icon{width:38px;height:38px}
 }
+
+/* ---------- chart colours come from here so they follow the theme ---------- */
+.admin{--chart-bar:#a8782a;--chart-bar-hover:#8d6a2f;--chart-grid:rgba(120,110,95,.16);--chart-axis:rgba(120,110,95,.35)}
+.a-chart .recharts-bar-rectangle path{fill:var(--chart-bar)}
+.a-chart .recharts-bar-rectangle:hover path,.a-chart .recharts-active-bar path{fill:var(--chart-bar-hover)}
+.a-chart .recharts-cartesian-grid line{stroke:var(--chart-grid)}
+.a-chart .recharts-cartesian-axis-line{stroke:var(--chart-axis)}
+.a-chart .recharts-cartesian-axis-tick-value{fill:var(--muted)}
+.a-chart .recharts-tooltip-cursor{fill:var(--a-hover)}
+
+/* appearance choices in the profile menu */
+.a-menu-item.radio{gap:10px}
+.a-radio-mark{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--muted);flex-shrink:0}
+.a-menu-item[data-state="checked"] .a-radio-mark{border-color:var(--gold-ink);background:radial-gradient(circle,var(--gold-ink) 0 3.5px,transparent 4px)}
+
+/* ============================================================
+   Dark theme: warm charcoal, smoked glass, the same colour glows
+   turned down. Set on <html data-admin-theme="dark"> (AdminApp.js)
+   so menus and dialogs outside .admin follow it too.
+   ============================================================ */
+html[data-admin-theme="dark"]{color-scheme:dark}
+html[data-admin-theme="dark"] :is(.admin,.a-menu,.a-dialog,.a-cmdk,.a-tooltip,.a-sheet,.a-overlay){
+  --ink:#efe7da;--ink-2:#d6cabb;--muted:#a8998a;--surface:#2a241f;
+  --a-line:rgba(255,240,220,.09);--a-hover:rgba(255,240,220,.07);
+  --glass:rgba(38,32,27,.55);--glass-strong:rgba(40,34,29,.78);--glass-edge:rgba(255,240,220,.09);
+  --gold-ink:#d9b46a;
+  --a-shadow:inset 0 1px 0 rgba(255,240,220,.06),0 14px 34px -18px rgba(0,0,0,.7);
+  --chart-bar:#d9b46a;--chart-bar-hover:#e9cc8f;--chart-grid:rgba(255,240,220,.08);--chart-axis:rgba(255,240,220,.18);
+  color:var(--ink)}
+html[data-admin-theme="dark"] .admin{background:#15110e}
+html[data-admin-theme="dark"] .admin::before{opacity:.55;filter:blur(60px) saturate(120%);
+  background:
+    radial-gradient(38% 42% at 88% 6%,rgba(201,154,74,.55),transparent 70%),
+    radial-gradient(34% 40% at 10% 20%,rgba(96,128,96,.5),transparent 70%),
+    radial-gradient(36% 40% at 72% 80%,rgba(160,82,66,.45),transparent 70%),
+    radial-gradient(40% 44% at 22% 92%,rgba(70,100,128,.5),transparent 70%)}
+
+/* surfaces that were plain white in the light theme */
+html[data-admin-theme="dark"] :is(.a-search-trigger,.a-round-btn,.a-user-pill,.a-btn.ghost,.a-search,.a-select,
+  .a-note-form textarea,.a-field input,.a-field select,.a-field textarea){background:rgba(255,240,220,.05);border-color:var(--glass-edge);color:var(--ink)}
+html[data-admin-theme="dark"] .a-search input{color:var(--ink)}
+html[data-admin-theme="dark"] :is(.a-search-trigger kbd,.a-cmdk kbd){background:rgba(255,240,220,.06);border-color:var(--glass-edge);color:var(--ink-2)}
+html[data-admin-theme="dark"] .a-dot{box-shadow:0 0 0 2px #2a241f}
+html[data-admin-theme="dark"] .a-btn{background:var(--gold-ink);border-color:var(--gold-ink);color:#1d1712;box-shadow:0 8px 20px -10px rgba(0,0,0,.8)}
+html[data-admin-theme="dark"] .a-btn:hover{background:#e9cc8f;border-color:#e9cc8f}
+html[data-admin-theme="dark"] .a-btn.ghost:hover{border-color:var(--ink-2)}
+html[data-admin-theme="dark"] .a-btn.danger{background:transparent;color:#f0a493;border-color:rgba(240,164,147,.35)}
+html[data-admin-theme="dark"] .a-btn.danger:hover,html[data-admin-theme="dark"] .a-btn.danger.solid{background:#c0533f;border-color:#c0533f;color:#fff}
+html[data-admin-theme="dark"] .a-link:hover{color:#f3dfb2}
+
+/* rail */
+html[data-admin-theme="dark"] .a-rail-nav a.active .a-rail-icon{background:rgba(255,240,220,.1);color:var(--gold-ink);box-shadow:inset 0 0 0 1px rgba(255,240,220,.12)}
+html[data-admin-theme="dark"] .a-rail-nav a:hover,html[data-admin-theme="dark"] .a-rail-shop:hover{background:rgba(255,240,220,.06)}
+html[data-admin-theme="dark"] .a-rail-count{box-shadow:0 0 0 2px #2a241f}
+html[data-admin-theme="dark"] .a-sheet{background:rgba(30,25,21,.92)}
+
+/* small pieces */
+html[data-admin-theme="dark"] .a-avatar{background:rgba(255,240,220,.08);color:var(--ink-2);box-shadow:inset 0 0 0 1px rgba(255,240,220,.12)}
+html[data-admin-theme="dark"] .a-user-pill .a-avatar{background:linear-gradient(145deg,#e6c88c,#b9842f);color:#2a1d0a}
+html[data-admin-theme="dark"] :is(.a-segment,.a-view-toggle){background:rgba(255,240,220,.06)}
+html[data-admin-theme="dark"] .a-segment button[aria-pressed="true"]{background:rgba(255,240,220,.12);color:var(--ink)}
+html[data-admin-theme="dark"] .a-segment.dark{background:rgba(0,0,0,.3)}
+html[data-admin-theme="dark"] .a-segment.dark button[aria-pressed="true"]{background:var(--gold);color:var(--choc)}
+html[data-admin-theme="dark"] .a-view-toggle button[aria-pressed="true"]{background:rgba(255,240,220,.12);color:var(--gold-ink);box-shadow:none}
+html[data-admin-theme="dark"] .a-badge{background:rgba(255,240,220,.08);color:var(--ink-2)}
+html[data-admin-theme="dark"] .a-badge.wait{background:rgba(214,154,45,.16);color:#f0c674}
+html[data-admin-theme="dark"] .a-badge.go{background:rgba(147,178,198,.14);color:#a9c4d6}
+html[data-admin-theme="dark"] .a-badge.done{background:rgba(110,170,120,.16);color:#9fd1a8}
+html[data-admin-theme="dark"] .a-badge.off{background:rgba(255,240,220,.07);color:#b3a596}
+html[data-admin-theme="dark"] .a-delta.up{color:#9fd1a8}
+html[data-admin-theme="dark"] .a-delta.down{color:#f0a493}
+html[data-admin-theme="dark"] .a-notice{background:rgba(255,240,220,.06);color:var(--ink-2)}
+
+/* overview */
+html[data-admin-theme="dark"] .a-hero{box-shadow:inset 0 0 0 1px rgba(230,200,140,.12),0 22px 44px -26px rgba(0,0,0,.9)}
+html[data-admin-theme="dark"] :is(.a-split,.a-meter){background:rgba(255,240,220,.07);box-shadow:none}
+html[data-admin-theme="dark"] :is(.a-split-legend,.a-spot-facts,.a-pcard-facts,.a-notes li){background:rgba(255,240,220,.05)}
+html[data-admin-theme="dark"] .a-split-seg.moving,html[data-admin-theme="dark"] .a-split-dot.moving{background:#7f9db3}
+html[data-admin-theme="dark"] .a-promo{color:var(--ink);background:linear-gradient(135deg,rgba(201,154,74,.28) 0%,rgba(38,32,27,.5) 55%,rgba(96,128,96,.3) 100%)}
+html[data-admin-theme="dark"] .a-promo p{color:var(--ink-2)}
+html[data-admin-theme="dark"] .a-promo-btn{background:var(--gold-ink);color:#1d1712}
+html[data-admin-theme="dark"] .a-promo-btn:hover{background:#e9cc8f}
+html[data-admin-theme="dark"] .a-promo::after{border-color:rgba(217,180,106,.35)}
+html[data-admin-theme="dark"] .a-feed-icon{background:#2f2823;color:var(--muted);box-shadow:0 0 0 4px rgba(38,32,27,.9)}
+html[data-admin-theme="dark"] .a-feed li.s-paid .a-feed-icon{background:rgba(214,154,45,.2);color:#f0c674}
+html[data-admin-theme="dark"] :is(.a-feed li.s-shipped,.a-feed li.s-processing) .a-feed-icon{background:rgba(147,178,198,.18);color:#a9c4d6}
+html[data-admin-theme="dark"] .a-feed li.s-delivered .a-feed-icon{background:rgba(110,170,120,.18);color:#9fd1a8}
+html[data-admin-theme="dark"] .a-rank-n{background:#2f2823;color:var(--ink);box-shadow:0 0 0 1px rgba(255,240,220,.15)}
+html[data-admin-theme="dark"] .a-mini-icon{box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 8px 16px -8px rgba(0,0,0,.8)}
+
+/* products */
+html[data-admin-theme="dark"] .a-pcard.alert{border-color:rgba(229,128,104,.45)}
+html[data-admin-theme="dark"] .a-swatches .a-swatch{border-color:#2a241f;box-shadow:0 0 0 1px rgba(255,240,220,.15)}
+
+/* tables */
+html[data-admin-theme="dark"] .a-table th{background:rgba(255,240,220,.04)}
+html[data-admin-theme="dark"] .a-table tbody tr:hover{background:rgba(255,240,220,.05)}
+html[data-admin-theme="dark"] .a-table tbody tr.selected{background:rgba(214,154,45,.12)}
+html[data-admin-theme="dark"] .a-bulk{background:rgba(214,154,45,.14)}
+html[data-admin-theme="dark"] .a-tabs button.on{background:rgba(255,240,220,.1);box-shadow:none}
+html[data-admin-theme="dark"] .a-count{background:rgba(255,240,220,.08)}
+html[data-admin-theme="dark"] .a-tabs button.on .a-count{background:rgba(214,154,45,.22);color:#f0c674}
+
+/* order page and forms */
+html[data-admin-theme="dark"] .a-progress-dot{background:#2a241f;border-color:rgba(255,240,220,.2)}
+html[data-admin-theme="dark"] .a-progress li::after{background:rgba(255,240,220,.12)}
+html[data-admin-theme="dark"] .a-progress li.done::after{background:var(--gold-ink)}
+html[data-admin-theme="dark"] .a-progress li.done .a-progress-dot{background:var(--gold-ink);border-color:var(--gold-ink);color:#1d1712}
+html[data-admin-theme="dark"] .a-timeline li::before{background:rgba(255,240,220,.2)}
+html[data-admin-theme="dark"] .a-timeline li:first-child::before{background:var(--gold-ink)}
+html[data-admin-theme="dark"] .a-form-bar{background:linear-gradient(0deg,rgba(21,17,14,.94) 70%,transparent)}
+
+/* portals */
+html[data-admin-theme="dark"] :is(.a-menu,.a-dialog,.a-cmdk){background:rgba(36,30,26,.92);border:1px solid var(--glass-edge);color:var(--ink)}
+html[data-admin-theme="dark"] .a-cmdk [cmdk-input]{color:var(--ink)}
+html[data-admin-theme="dark"] .a-tip{background:rgba(36,30,26,.94);color:var(--ink)}
+html[data-admin-theme="dark"] .a-menu-ic{background:rgba(214,154,45,.2)}
+html[data-admin-theme="dark"] .a-menu-ic svg{color:#f0c674}
+html[data-admin-theme="dark"] .a-menu-item.danger,html[data-admin-theme="dark"] .a-menu-item.danger svg{color:#f0a493}
+html[data-admin-theme="dark"] .a-menu-item.danger[data-highlighted]{background:rgba(192,83,63,.18)}
+html[data-admin-theme="dark"] .a-overlay{background:rgba(0,0,0,.55)}

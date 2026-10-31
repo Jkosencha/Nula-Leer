@@ -15,6 +15,8 @@ import {
   RotateCcw,
   LogOut,
   Banknote,
+  Moon,
+  Sun,
 } from "lucide-react";
 import Overview from "./Overview";
 import Orders from "./Orders";
@@ -38,6 +40,48 @@ const NAV = [
 ];
 
 const CRUMBS = { orders: "Orders", products: "Products", customers: "Customers", new: "New product" };
+
+// Appearance: "light", "dark" or "system" (follow the device). Remembered per device.
+// The theme is set on <html> so menus and dialogs, which render outside .admin, follow it.
+const THEME_KEY = "admin.theme";
+const readTheme = () => {
+  try {
+    return localStorage.getItem(THEME_KEY) || "system";
+  } catch (e) {
+    return "system";
+  }
+};
+const prefersDark = () => window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+
+const useTheme = () => {
+  const [pref, setPref] = useState(readTheme);
+  const [systemDark, setSystemDark] = useState(prefersDark);
+
+  useEffect(() => {
+    const mq = window.matchMedia?.("(prefers-color-scheme: dark)");
+    if (!mq) return undefined;
+    const update = () => setSystemDark(mq.matches);
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  const resolved = pref === "system" ? (systemDark ? "dark" : "light") : pref;
+
+  useEffect(() => {
+    document.documentElement.dataset.adminTheme = resolved;
+    return () => delete document.documentElement.dataset.adminTheme; // the shop keeps its own look
+  }, [resolved]);
+
+  const choose = (value) => {
+    setPref(value);
+    try {
+      localStorage.setItem(THEME_KEY, value);
+    } catch (e) {
+      // fine: it just won't be remembered
+    }
+  };
+  return { pref, resolved, choose };
+};
 
 // Floating leather rail: icon above label, like a tool belt.
 const Rail = ({ toPrepare }) => (
@@ -100,7 +144,7 @@ const Notifications = ({ waiting }) => {
   );
 };
 
-const UserMenu = ({ email, onReset }) => (
+const UserMenu = ({ email, onReset, theme }) => (
   <Dropdown.Root>
     <Dropdown.Trigger className="a-user-pill">
       <Avatar person={ADMIN_USER} />
@@ -120,6 +164,20 @@ const UserMenu = ({ email, onReset }) => (
         <Dropdown.Item className="a-menu-item" onSelect={() => window.open("/", "_blank", "noopener")}>
           <ExternalLink size={15} /> View shop
         </Dropdown.Item>
+        <Dropdown.Separator className="a-menu-sep" />
+        <p className="a-menu-title">Appearance</p>
+        <Dropdown.RadioGroup value={theme.pref} onValueChange={theme.choose}>
+          {[
+            ["light", "Light"],
+            ["dark", "Dark"],
+            ["system", "Match device"],
+          ].map(([value, label]) => (
+            <Dropdown.RadioItem key={value} value={value} className="a-menu-item radio" onSelect={(e) => e.preventDefault()}>
+              <span className="a-radio-mark" aria-hidden="true" />
+              {label}
+            </Dropdown.RadioItem>
+          ))}
+        </Dropdown.RadioGroup>
         <Dropdown.Separator className="a-menu-sep" />
         {email ? (
           <Dropdown.Item className="a-menu-item" onSelect={() => supabase.auth.signOut()}>
@@ -143,6 +201,7 @@ const AdminApp = ({ email }) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
   const [waiting, setWaiting] = useState([]);
+  const theme = useTheme();
 
   useEffect(() => setSheetOpen(false), [pathname]);
 
@@ -210,8 +269,15 @@ const AdminApp = ({ email }) => {
               <span>Search orders, products…</span>
               <kbd>{isMac ? "⌘" : "Ctrl"} K</kbd>
             </button>
+            <button
+              className="a-round-btn"
+              aria-label={theme.resolved === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+              onClick={() => theme.choose(theme.resolved === "dark" ? "light" : "dark")}
+            >
+              {theme.resolved === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
             <Notifications waiting={waiting} />
-            <UserMenu email={email} onReset={() => setResetOpen(true)} />
+            <UserMenu email={email} onReset={() => setResetOpen(true)} theme={theme} />
           </div>
         </header>
 
