@@ -9,8 +9,7 @@ import DeliveryPicker, { townLabel } from "../components/DeliveryPicker";
 import { DEMO, LIVE } from "../config";
 import { createOrder, saveLastOrder } from "../orders";
 import usePageTitle from "../usePageTitle";
-
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+import { track } from "../analytics";
 
 const Field = ({ label, className = "", ...props }) => (
   <label className={`uline ${className}`.trim()}>
@@ -27,40 +26,16 @@ const Checkout = () => {
     firstName: "", lastName: "", email: "", phone: "", address: "", notes: "",
   });
   const [paymentMethod, setPaymentMethod] = useState("mpesa");
-  const [mpesaNumber, setMpesaNumber] = useState("");
-  const [card, setCard] = useState({ name: "", cardNumber: "", expiry: "", cvv: "" });
+  const [paying, setPaying] = useState(false);
   const [gift, setGift] = useState({ isGift: false, message: "" });
   const navigate = useNavigate();
 
   const total = subtotal + (shippingCost || 0) - discount;
   const update = (key) => (e) => setContact({ ...contact, [key]: e.target.value });
 
-  const handleMpesa = async () => {
-    if (!mpesaNumber) return toast.error("Please enter your M-Pesa number.");
-    try {
-      const res = await fetch(`${API_URL}/api/stkpush`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: mpesaNumber, amount: total }),
-      });
-      const data = await res.json();
-      if (res.ok) toast.success("STK push sent — complete payment on your phone.");
-      else toast.error(data.message || "M-Pesa payment failed. Try again.");
-    } catch (err) {
-      toast.error("Network error. Please try again.");
-    }
-  };
-
-  const handleCard = () => {
-    const { cardNumber, expiry, cvv } = card;
-    if (!cardNumber || !expiry || !cvv) return toast.error("Please fill in all card details.");
-    toast.success("Card payment successful!");
-  };
-
   const continueToPayment = (e) => {
     e.preventDefault();
     if (!shippingLocation) return toast.error("Please choose a delivery area.");
-    if (!mpesaNumber) setMpesaNumber(contact.phone);
     setStep("payment");
     window.scrollTo(0, 0);
   };
@@ -77,11 +52,32 @@ const Checkout = () => {
       discount,
     });
 
-  const completePurchase = (e) => {
+  // The server prices the order, saves it and returns Paystack's payment page.
+  // Paystack sends the customer back to /order/confirmation?ref=… when done.
+  const completePurchase = async (e) => {
     e.preventDefault();
-    if (!LIVE.payments) return;
-    if (paymentMethod === "mpesa") handleMpesa();
-    else handleCard();
+    if (!LIVE.payments || paying) return;
+    setPaying(true);
+    try {
+      const res = await fetch("/api/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: cartItems.map((i) => ({ productId: i.id, colour: i.selectedColor || null, quantity: i.quantity })),
+          contact,
+          town: shippingLocation,
+          gift,
+          method: paymentMethod,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.paymentUrl) throw new Error(data.error || "We couldn't start the payment. Please try again.");
+      track("Start payment", { method: paymentMethod, total });
+      window.location.assign(data.paymentUrl);
+    } catch (err) {
+      toast.error(err.message === "Failed to fetch" ? "Network error. Please try again." : err.message);
+      setPaying(false);
+    }
   };
 
   // demo only: see the confirmation page with this checkout's details
@@ -191,61 +187,21 @@ const Checkout = () => {
                     checked={paymentMethod === "card"}
                     onChange={() => setPaymentMethod("card")}
                   />
-                  Credit or debit card
+                  Card or Apple Pay
                 </label>
               </div>
 
-              {paymentMethod === "mpesa" ? (
-                <div className="uline-grid">
-                  <Field
-                    label="M-Pesa number"
-                    type="tel"
-                    placeholder="2547XXXXXXXX"
-                    value={mpesaNumber}
-                    onChange={(e) => setMpesaNumber(e.target.value)}
-                    required
-                  />
-                  <p className="muted small pay-note">
-                    You'll get a prompt on your phone to pay KSh {total.toLocaleString()}.
-                  </p>
-                </div>
-              ) : (
-                <div className="uline-grid">
-                  <Field
-                    label="Name on card"
-                    value={card.name}
-                    onChange={(e) => setCard({ ...card, name: e.target.value })}
-                    autoComplete="cc-name"
-                  />
-                  <Field
-                    label="Card number"
-                    inputMode="numeric"
-                    autoComplete="cc-number"
-                    value={card.cardNumber}
-                    onChange={(e) => setCard({ ...card, cardNumber: e.target.value })}
-                  />
-                  <Field
-                    label="Expiry date"
-                    placeholder="MM/YY"
-                    autoComplete="cc-exp"
-                    value={card.expiry}
-                    onChange={(e) => setCard({ ...card, expiry: e.target.value })}
-                  />
-                  <Field
-                    label="CVC"
-                    inputMode="numeric"
-                    autoComplete="cc-csc"
-                    value={card.cvv}
-                    onChange={(e) => setCard({ ...card, cvv: e.target.value })}
-                  />
-                </div>
-              )}
+              <p className="muted small pay-note">
+                {paymentMethod === "mpesa"
+                  ? `You'll confirm KSh ${total.toLocaleString()} with your M-Pesa PIN on Paystack's secure page.`
+                  : "You'll enter your card on Paystack's secure page. Visa, Mastercard and American Express are accepted, from Kenya and abroad."}
+              </p>
 
             </fieldset>
 
             <div className="co-actions">
-              <button type="submit" className="btn square" disabled={!LIVE.payments}>
-                Complete purchase · KSh {total.toLocaleString()}
+              <button type="submit" className="btn square" disabled={!LIVE.payments || paying}>
+                {paying ? "Taking you to payment…" : `Pay KSh ${total.toLocaleString()}`}
               </button>
               {!LIVE.payments && DEMO && (
                 <button type="button" className="under-link" onClick={previewConfirmation}>

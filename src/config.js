@@ -10,8 +10,9 @@ export const SHOP_OPEN = true;
 
 // Features that need a real backend. While false they stay visible but are
 // greyed out with a short note. Switch each on once its backend is connected.
+// Payments turn on with REACT_APP_PAYMENTS=on in the hosting settings (see BACKEND.md).
 export const LIVE = {
-  payments: false, // M-Pesa / card at checkout
+  payments: process.env.REACT_APP_PAYMENTS === "on", // Paystack: M-Pesa and cards
   discounts: false, // discount codes (must be checked server-side)
   reviews: false, // star ratings shared between customers
 };
