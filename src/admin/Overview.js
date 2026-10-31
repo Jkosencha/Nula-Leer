@@ -19,10 +19,11 @@ import { listOrders, listProducts } from "./api";
 import { availability } from "../availability";
 import { categoryName } from "../pages/Products";
 import { DEMO } from "../config";
+import { useProfile, firstName } from "./account";
 import ProductImage from "../components/ProductImage";
 import SalesChart, { dailySales } from "./SalesChart";
 import DataTable from "./DataTable";
-import { ADMIN_USER, StatusBadge, Delta, Avatar, ksh, shortDate, customerName } from "./ui";
+import { StatusBadge, Delta, Avatar, ksh, shortDate, customerName } from "./ui";
 
 const DAY = 86400000;
 const RANGES = [7, 30];
@@ -89,6 +90,7 @@ const Overview = () => {
   const [orders, setOrders] = useState(null);
   const [products, setProducts] = useState([]);
   const [days, setDays] = useState(30);
+  const { profile } = useProfile();
 
   useEffect(() => {
     listOrders().then(setOrders);
@@ -176,7 +178,7 @@ const Overview = () => {
         <section className="a-hero">
           <div className="a-hero-top">
             <div>
-              <h1>{greeting()}, {ADMIN_USER.firstName}</h1>
+              <h1>{greeting()}, {firstName(profile)}</h1>
               <p className="a-hero-sub">{today}</p>
             </div>
             <div className="a-segment dark" role="group" aria-label="Date range">
