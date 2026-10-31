@@ -80,7 +80,8 @@ export const savePhoto = async (file, profile) => {
   const blob = await squareJpeg(file);
   if (!BACKEND) return writeLocal({ avatar: await blobToDataUrl(blob) });
   const path = `${profile.id}/avatar-${Date.now()}.jpg`;
-  const { error: upErr } = await supabase.storage.from("avatars").upload(path, blob, { contentType: "image/jpeg", upsert: true });
+  // a new file name each time, so no overwrite (overwriting needs extra storage permissions)
+  const { error: upErr } = await supabase.storage.from("avatars").upload(path, blob, { contentType: "image/jpeg", upsert: false });
   if (upErr) throw upErr;
   const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
   const { data, error } = await supabase.auth.updateUser({ data: { avatar_url: pub.publicUrl } });
