@@ -6,7 +6,7 @@ import { CONTACT, whatsappLink } from "../config";
 import usePageTitle from "../usePageTitle";
 
 // Update this whenever the wording below changes.
-const LAST_UPDATED = "30 October 2026";
+const LAST_UPDATED = "31 October 2026";
 
 const REGION_LABELS = { Others: "Rest of Kenya" };
 
@@ -183,7 +183,7 @@ const POLICIES = {
         <h2>What we collect</h2>
         <ul className="bullets">
           <li><b>When you order:</b> your name, phone number, email, delivery address, delivery notes and any gift note.</li>
-          <li><b>When you pay:</b> your M-Pesa number and transaction reference, or a confirmation from the card payment provider. We never see or store your full card details.</li>
+          <li><b>When you pay:</b> payments are handled by Paystack. We receive a confirmation and transaction reference, never your card number or M-Pesa PIN.</li>
           <li><b>When you contact us:</b> what you send us by WhatsApp, email or phone.</li>
         </ul>
 
@@ -199,10 +199,11 @@ const POLICIES = {
         </ul>
 
         <h2>Who we share it with</h2>
-        <p>Only the people needed to complete your order:</p>
+        <p>Only the people and services needed to complete your order:</p>
         <ul className="bullets">
           <li>riders and couriers who deliver your order (your name, phone and address);</li>
-          <li>payment providers who process your payment.</li>
+          <li>Paystack, which processes your payment;</li>
+          <li>the services that store our order records and send your order emails and text messages.</li>
         </ul>
         <p>We never sell or rent your personal information.</p>
 
@@ -211,6 +212,10 @@ const POLICIES = {
           Your cart and wishlist are saved in your own browser so they're still there when you
           come back. They stay on your device and you can clear them at any time. We don't use
           advertising or tracking cookies.
+        </p>
+        <p>
+          We count visits with Umami, which uses no cookies and collects no personal information:
+          only things like which pages are viewed and roughly which country a visit comes from.
         </p>
 
         <h2>How long we keep it</h2>
