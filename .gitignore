@@ -23,5 +23,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# temporary Unsplash demo photos (local only, see public/demo/CREDITS.md)
-/public/demo
+
+# Netlify settings with real keys (see netlify.env); never commit
+netlify.env
+
+# portfolio screenshots of the dashboard (kept locally)
+/portfolio-screenshots

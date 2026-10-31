@@ -3,8 +3,17 @@
 // otherwise the dashboard runs on sample data in this browser (see api.js).
 import { createClient } from "@supabase/supabase-js";
 
-const url = process.env.REACT_APP_SUPABASE_URL;
-const anonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+// only the origin: a URL pasted with /rest/v1/ or a trailing slash breaks sign-in
+const projectUrl = (raw) => {
+  try {
+    return new URL(String(raw).trim()).origin;
+  } catch (e) {
+    return "";
+  }
+};
+
+const url = process.env.REACT_APP_SUPABASE_URL && projectUrl(process.env.REACT_APP_SUPABASE_URL);
+const anonKey = process.env.REACT_APP_SUPABASE_ANON_KEY?.trim();
 
 export const BACKEND = !!(url && anonKey);
 
