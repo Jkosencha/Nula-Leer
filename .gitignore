@@ -26,3 +26,6 @@ yarn-error.log*
 
 # Netlify settings with real keys (see netlify.env); never commit
 netlify.env
+
+# portfolio screenshots of the dashboard (kept locally)
+/portfolio-screenshots
