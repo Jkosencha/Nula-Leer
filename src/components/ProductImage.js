@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import CategoryArt from "./CategoryArt";
 import { categories } from "../pages/Products";
 
@@ -9,8 +9,14 @@ const isLight = (hex) => {
 
 // A product photo, or a leather illustration when there's no photo yet.
 // `tone` overrides the colour (e.g. the selected colour on the product page).
+// A photo that fails to load falls back to the illustration instead of a broken image.
 const ProductImage = ({ src, product, tone, alt = "", className = "", eager = false }) => {
-  if (src) return <img src={src} alt={alt} className={className} loading={eager ? "eager" : "lazy"} decoding="async" />;
+  const [failed, setFailed] = useState(null);
+  if (src && failed !== src) {
+    return (
+      <img src={src} alt={alt} className={className} loading={eager ? "eager" : "lazy"} decoding="async" onError={() => setFailed(src)} />
+    );
+  }
   const color = tone || categories.find((c) => c.slug === product.category)?.tone || "#4a2c1c";
   return (
     <div
