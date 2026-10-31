@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { SHIPPING_OPTIONS } from "../pages/CartContext";
+import { SHIPPING_OPTIONS, townLabel } from "../shipping";
 import Select from "./Select";
 
 const REGION_LABELS = { Others: "Rest of Kenya" };
 
-// "ThikaRoad" -> "Thika Road"
-export const townLabel = (town) => town.replace(/([a-z])([A-Z])/g, "$1 $2");
+export { townLabel };
 
 const regionOf = (town) =>
   Object.keys(SHIPPING_OPTIONS).find((region) => town in SHIPPING_OPTIONS[region]);
