@@ -3,9 +3,6 @@ import * as Dropdown from "@radix-ui/react-dropdown-menu";
 import * as Dialog from "@radix-ui/react-dialog";
 import { ArrowDownRight, ArrowUpRight, MoreHorizontal } from "lucide-react";
 
-// Who is "signed in" until real sign-in arrives with the backend.
-export const ADMIN_USER = { firstName: "Jennifer", lastName: "Kosencha", role: "Owner" };
-
 // Labels, next actions and badge tone for each order status (orders.js ORDER_STATUSES).
 export const STATUS = {
   pending_payment: { label: "Awaiting payment", tone: "wait", next: "paid", action: "Mark as paid" },
@@ -33,7 +30,8 @@ export const dateTime = (iso) =>
 
 export const customerName = (c) => `${c.firstName} ${c.lastName}`;
 
-export const initials = (c) => `${c.firstName[0] || ""}${c.lastName[0] || ""}`.toUpperCase();
+export const initials = (c) =>
+  (c?.firstName ? `${c.firstName[0] || ""}${c.lastName?.[0] || ""}` : (c?.name || "?").split(" ").map((w) => w[0]).slice(0, 2).join("")).toUpperCase();
 
 // "254712345678" style for wa.me links
 export const waNumber = (phone) => phone.replace(/\D/g, "").replace(/^0/, "254");
@@ -61,7 +59,11 @@ export const Delta = ({ now, before, label }) => {
   );
 };
 
-export const Avatar = ({ person }) => <span className="a-avatar" aria-hidden="true">{initials(person)}</span>;
+export const Avatar = ({ person }) => (
+  <span className="a-avatar" aria-hidden="true">
+    {person?.avatar ? <img src={person.avatar} alt="" /> : initials(person)}
+  </span>
+);
 
 // Row menu: items are { label, icon, onSelect, href, danger } or "sep".
 export const RowMenu = ({ label, items }) => (

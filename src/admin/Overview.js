@@ -19,10 +19,11 @@ import { listOrders, listProducts } from "./api";
 import { availability } from "../availability";
 import { categoryName } from "../pages/Products";
 import { DEMO } from "../config";
+import { useProfile, firstName } from "./account";
 import ProductImage from "../components/ProductImage";
 import SalesChart, { dailySales } from "./SalesChart";
 import DataTable from "./DataTable";
-import { ADMIN_USER, StatusBadge, Delta, Avatar, ksh, shortDate, customerName } from "./ui";
+import { StatusBadge, Delta, Avatar, ksh, shortDate, customerName } from "./ui";
 
 const DAY = 86400000;
 const RANGES = [7, 30];
@@ -89,6 +90,7 @@ const Overview = () => {
   const [orders, setOrders] = useState(null);
   const [products, setProducts] = useState([]);
   const [days, setDays] = useState(30);
+  const { profile } = useProfile();
 
   useEffect(() => {
     listOrders().then(setOrders);
@@ -176,7 +178,7 @@ const Overview = () => {
         <section className="a-hero">
           <div className="a-hero-top">
             <div>
-              <h1>{greeting()}, {ADMIN_USER.firstName}</h1>
+              <h1>{greeting()}, {firstName(profile)}</h1>
               <p className="a-hero-sub">{today}</p>
             </div>
             <div className="a-segment dark" role="group" aria-label="Date range">
@@ -241,40 +243,6 @@ const Overview = () => {
 
           <SalesChart orders={orders} days={days} />
 
-          <section className="a-card">
-            <div className="a-card-head">
-              <div>
-                <h2>Best sellers</h2>
-                <p className="a-muted small">By takings, last {days} days</p>
-              </div>
-              <Link to="/admin/products" className="a-link small">Products</Link>
-            </div>
-            {stats.top.length === 0 ? (
-              <p className="a-muted">No sales in this period.</p>
-            ) : (
-              <ol className="a-rank">
-                {stats.top.map((p, i) => {
-                  const product = productOf(p.id);
-                  return (
-                    <li key={p.id}>
-                      <span className="a-rank-thumb">
-                        {product ? <ProductImage src={product.image} product={product} alt="" eager /> : null}
-                        <span className="a-rank-n">{i + 1}</span>
-                      </span>
-                      <span className="a-rank-body">
-                        <span className="a-rank-row">
-                          <Link to={`/admin/products/${p.id}`} className="a-strong">{p.name}</Link>
-                          <span className="a-strong">{ksh(p.sales)}</span>
-                        </span>
-                        <span className="a-meter thin"><span style={{ width: `${(p.sales / topMax) * 100}%` }} /></span>
-                        <span className="a-muted small">{p.units} sold</span>
-                      </span>
-                    </li>
-                  );
-                })}
-              </ol>
-            )}
-          </section>
         </div>
 
         <div className="a-ov-side">
@@ -330,54 +298,93 @@ const Overview = () => {
             )}
           </section>
 
-          <section className="a-card">
-            <div className="a-card-head">
-              <div>
-                <h2>Recent activity</h2>
-                <p className="a-muted small">Orders and payments as they happen</p>
-              </div>
+
+        </div>
+      </div>
+
+      <div className="a-row-3">
+        <section className="a-card">
+          <div className="a-card-head">
+            <div>
+              <h2>Best sellers</h2>
+              <p className="a-muted small">By takings, last {days} days</p>
             </div>
-            <ol className="a-feed">
-              {stats.activity.map((e, k) => {
-                const ev = EVENT[e.status];
-                const Icon = ev.icon;
+            <Link to="/admin/products" className="a-link small">Products</Link>
+          </div>
+          {stats.top.length === 0 ? (
+            <p className="a-muted">No sales in this period.</p>
+          ) : (
+            <ol className="a-rank">
+              {stats.top.map((p, i) => {
+                const product = productOf(p.id);
                 return (
-                  <li key={k} className={`s-${e.status}`}>
-                    <span className="a-feed-icon"><Icon size={15} strokeWidth={1.9} /></span>
-                    <Link to={`/admin/orders/${e.order.id}`} className="a-feed-text">{ev.text(e.order)}</Link>
-                    <span className="a-feed-time">{ago(e.at)}</span>
+                  <li key={p.id}>
+                    <span className="a-rank-thumb">
+                      {product ? <ProductImage src={product.image} product={product} alt="" eager /> : null}
+                      <span className="a-rank-n">{i + 1}</span>
+                    </span>
+                    <span className="a-rank-body">
+                      <span className="a-rank-row">
+                        <Link to={`/admin/products/${p.id}`} className="a-strong">{p.name}</Link>
+                        <span className="a-strong">{ksh(p.sales)}</span>
+                      </span>
+                      <span className="a-meter thin"><span style={{ width: `${(p.sales / topMax) * 100}%` }} /></span>
+                      <span className="a-muted small">{p.units} sold</span>
+                    </span>
                   </li>
                 );
               })}
             </ol>
-          </section>
+          )}
+        </section>
 
-          <section className="a-card">
-            <div className="a-card-head">
-              <div>
-                <h2>Sales by category</h2>
-                <p className="a-muted small">Last {days} days</p>
-              </div>
+        <section className="a-card">
+          <div className="a-card-head">
+            <div>
+              <h2>Recent activity</h2>
+              <p className="a-muted small">Orders and payments as they happen</p>
             </div>
-            {stats.categories.length === 0 ? (
-              <p className="a-muted">No sales in this period.</p>
-            ) : (
-              <ul className="a-meter-list">
-                {stats.categories.map((c) => (
-                  <li key={c.slug}>
-                    <Link to={`/admin/products`}>
-                      <span className="a-meter-label">{categoryName(c.slug)}</span>
-                      <span className="a-meter-value">
-                        {ksh(c.sales)} <span className="a-muted small">· {Math.round((c.sales / catTotal) * 100)}%</span>
-                      </span>
-                      <span className="a-meter"><span style={{ width: `${(c.sales / catMax) * 100}%` }} /></span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        </div>
+          </div>
+          <ol className="a-feed">
+            {stats.activity.map((e, k) => {
+              const ev = EVENT[e.status];
+              const Icon = ev.icon;
+              return (
+                <li key={k} className={`s-${e.status}`}>
+                  <span className="a-feed-icon"><Icon size={15} strokeWidth={1.9} /></span>
+                  <Link to={`/admin/orders/${e.order.id}`} className="a-feed-text">{ev.text(e.order)}</Link>
+                  <span className="a-feed-time">{ago(e.at)}</span>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+
+        <section className="a-card">
+          <div className="a-card-head">
+            <div>
+              <h2>Sales by category</h2>
+              <p className="a-muted small">Last {days} days</p>
+            </div>
+          </div>
+          {stats.categories.length === 0 ? (
+            <p className="a-muted">No sales in this period.</p>
+          ) : (
+            <ul className="a-meter-list">
+              {stats.categories.map((c) => (
+                <li key={c.slug}>
+                  <Link to={`/admin/products`}>
+                    <span className="a-meter-label">{categoryName(c.slug)}</span>
+                    <span className="a-meter-value">
+                      {ksh(c.sales)} <span className="a-muted small">· {Math.round((c.sales / catTotal) * 100)}%</span>
+                    </span>
+                    <span className="a-meter"><span style={{ width: `${(c.sales / catMax) * 100}%` }} /></span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
 
       <section className="a-card flush">
