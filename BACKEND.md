@@ -23,7 +23,14 @@ Nothing needs a code change.
    ```sql
    insert into public.admins (email) values ('you@example.com');
    ```
-5. **Project Settings → API**: copy the Project URL, the `anon` key and the `service_role` key for step 3.
+5. **Project Settings → Data API**: copy the Project URL (just `https://xxxx.supabase.co`, without `/rest/v1/`).
+   **Project Settings → API Keys → Legacy API keys**: copy the `anon` and `service_role` keys for step 3.
+6. **Authentication → URL Configuration**: set **Site URL** to your site (e.g. `https://nula-leer.netlify.app`)
+   and add `https://nula-leer.netlify.app/admin` under **Redirect URLs**, so "Forgot password?" emails link back
+   to the dashboard.
+
+If you set things up before profile pictures existed, run `supabase/schema.sql` again: it adds the
+`avatars` storage bucket and is safe to re-run.
 
 ## 2. Paystack (payments)
 
