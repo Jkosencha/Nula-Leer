@@ -796,3 +796,13 @@ html[data-admin-theme="dark"] .admin :is(.a-search-trigger,.a-round-btn,.a-user-
 html[data-admin-theme="dark"] .admin :is(.a-search-trigger,.a-round-btn,.a-user-pill,.a-btn.ghost){border-color:transparent}
 .a-promo::after{display:none}
 html[data-admin-theme="dark"] .admin .a-rail-nav a.active .a-rail-icon{box-shadow:none}
+
+/* ---------- logo ---------- */
+.a-logo{display:flex;justify-content:center;padding:4px 0 6px}
+.a-logo img{display:block;width:78px;height:auto}
+.a-logo-on-dark{display:none !important}
+html[data-admin-theme="dark"] .a-logo-on-light{display:none !important}
+html[data-admin-theme="dark"] .a-logo-on-dark{display:block !important}
+.a-sheet .a-logo img{width:84px}
+.a-auth-logo{position:relative;display:block;width:150px;height:auto}
+@media(max-width:900px){.a-auth-logo{width:104px}}

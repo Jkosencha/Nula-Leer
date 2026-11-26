@@ -89,8 +89,10 @@ const useTheme = () => {
 // Floating leather rail: icon above label, like a tool belt.
 const Rail = ({ toPrepare, signedIn }) => (
   <>
-    <Link to="/admin" className="a-mono" aria-label="Nula Leer dashboard home">
-      NL
+    <Link to="/admin" className="a-logo" aria-label="Nula Leer dashboard home">
+      {/* dark logo on the light sidebar, light logo in dark mode (switched in admin.css) */}
+      <img src="/brand/logo-espresso.png" alt="Nula Leer" className="a-logo-on-light" />
+      <img src="/brand/logo-vanilla.png" alt="" className="a-logo-on-dark" />
     </Link>
     <nav className="a-rail-nav" aria-label="Dashboard">
       {NAV.map((n) => {

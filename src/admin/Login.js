@@ -85,10 +85,7 @@ const Login = ({ denied, recovery, onRecovered }) => {
   return (
     <div className="a-auth">
       <aside className="a-auth-brand">
-        <div className="a-auth-lockup">
-          <span className="a-auth-mark">NL</span>
-          <span className="a-auth-name">Nula Leer</span>
-        </div>
+        <img src="/brand/logo-vanilla.png" alt="Nula Leer" className="a-auth-logo" />
         <div className="a-auth-copy">
           <h2>Your workshop, in one place.</h2>
           <ul className="a-auth-points">
