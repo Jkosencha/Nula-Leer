@@ -3,6 +3,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { FiX, FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import products, { categories, categoryName, colorNames } from "./Products";
 import ProductCard from "../components/ProductCard";
+import Reveal from "../components/Reveal";
 import ComingSoon from "../components/ComingSoon";
 import LeatherPanel from "../components/LeatherPanel";
 import Select from "../components/Select";
@@ -295,11 +296,14 @@ const Shop = () => {
               Showing {start + 1}–{start + visible.length} of {filtered.length}{" "}
               {filtered.length === 1 ? "product" : "products"}
             </p>
-            <div className="prod-grid four">
+            {/* key: a new filter or page replays the reveal for the new cards */}
+            <Reveal stagger className="prod-grid four" key={`${start}-${filtered.length}`}>
               {visible.map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <Reveal.Item key={p.id}>
+                  <ProductCard product={p} />
+                </Reveal.Item>
               ))}
-            </div>
+            </Reveal>
             {pages > 1 && (
               <nav className="pager" aria-label="Pages">
                 <button aria-label="Previous page" disabled={page === 1} onClick={() => setPage(page - 1)}><FiArrowLeft /></button>
