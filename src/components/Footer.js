@@ -11,8 +11,8 @@ const Footer = () => (
   <footer className="footer">
     <div className="wrap footer-grid">
       <div className="footer-news">
-        <Link to="/" className="brand">
-          Nula Leer
+        <Link to="/" className="brand" aria-label="Nula Leer, home">
+          <img src="/brand/logo-vanilla.png" alt="Nula Leer" width="86" height="46" />
         </Link>
         <p>Handmade leather goods from Nairobi, Kenya.</p>
         <Link to="/contact" className="btn sm footer-cta">Get in touch</Link>

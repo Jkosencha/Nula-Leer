@@ -987,3 +987,10 @@ form .co-title:not(:first-child){margin-top:44px}
   .page-fade{animation:none}
   html{scroll-behavior:auto}
 }
+
+/* ============================== LOGO ============================== */
+/* public/brand/logo-espresso.png on light backgrounds, logo-vanilla.png on dark ones */
+.brand img{display:block;height:52px;width:auto}
+.footer .brand img{height:62px}
+.co-header .brand img{height:40px}
+@media(max-width:900px){.brand img{height:38px}}

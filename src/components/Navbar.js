@@ -52,8 +52,8 @@ const Navbar = () => {
           <FiMenu />
         </button>
 
-        <Link to="/" className="brand">
-          Nula Leer
+        <Link to="/" className="brand" aria-label="Nula Leer, home">
+          <img src="/brand/logo-espresso.png" alt="Nula Leer" width="86" height="46" />
         </Link>
 
         <nav className={`nav-links ${menuOpen ? "show" : ""}`}>

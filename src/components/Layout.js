@@ -24,8 +24,8 @@ const CheckoutLayout = ({ children }) => (
   <>
     <header className="header co-header">
       <div className="nav-inner">
-        <Link to="/" className="brand">
-          Nula Leer
+        <Link to="/" className="brand" aria-label="Nula Leer, home">
+          <img src="/brand/logo-espresso.png" alt="Nula Leer" width="86" height="46" />
         </Link>
         <span className="secure"><FiLock /> Secure checkout</span>
       </div>
