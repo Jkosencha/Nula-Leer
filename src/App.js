@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { LazyMotion, domAnimation } from "motion/react";
 // import "react-toastify/dist/ReactToastify.css";
 
 import { CartProvider } from "./pages/CartContext";
@@ -29,45 +30,142 @@ const NotFound = () => (
   <div className="wrap empty" style={{ padding: "120px 0" }}>
     <h1>Page not found</h1>
     <p className="muted">The page you're looking for doesn't exist.</p>
-    <Link to="/" className="btn">Back home</Link>
+    <Link to="/" className="btn">
+      Back home
+    </Link>
   </div>
 );
 
+// LazyMotion + domAnimation: only the animation features the site uses (fades, slides),
+// which keeps Motion small. Components use the lightweight `m` instead of `motion`.
 const App = () => (
-  <Router>
-    <CartProvider>
-      <WishlistProvider>
-        <ToastContainer position="bottom-center" autoClose={2500} hideProgressBar theme="dark" />
-        <Routes>
-          <Route path="/" element={<Layout><Home /></Layout>} />
-          <Route path="/shop" element={<Layout><Shop /></Layout>} />
-          <Route path="/about" element={<Layout><About /></Layout>} />
-          <Route path="/productDetails/:id" element={<Layout><ProductDetails /></Layout>} />
-          <Route path="/contact" element={<Layout><Contact /></Layout>} />
-          <Route path="/collections" element={<Layout><Collections /></Layout>} />
-          <Route path="/collections/:slug" element={<Layout><CollectionPage /></Layout>} />
-          <Route path="/policies/:slug" element={<Layout><Policy /></Layout>} />
-          {SHOP_OPEN && (
-            <>
-              <Route path="/cart" element={<Layout><Cart /></Layout>} />
-              <Route path="/checkout" element={<Layout checkout><Checkout /></Layout>} />
-              <Route path="/order/confirmation" element={<Layout checkout><OrderConfirmation /></Layout>} />
-              <Route path="/wishlist" element={<Layout><Wishlist /></Layout>} />
-            </>
-          )}
-          <Route
-            path="/admin/*"
-            element={
-              <Suspense fallback={<p style={{ padding: 32 }}>Loading…</p>}>
-                <AdminApp />
-              </Suspense>
-            }
-          />
-          <Route path="*" element={<Layout><NotFound /></Layout>} />
-        </Routes>
-      </WishlistProvider>
-    </CartProvider>
-  </Router>
+  <LazyMotion features={domAnimation} strict>
+    <Router>
+      <CartProvider>
+        <WishlistProvider>
+          <ToastContainer position="bottom-center" autoClose={2500} hideProgressBar theme="dark" />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Layout>
+                  <Home />
+                </Layout>
+              }
+            />
+            <Route
+              path="/shop"
+              element={
+                <Layout>
+                  <Shop />
+                </Layout>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <Layout>
+                  <About />
+                </Layout>
+              }
+            />
+            <Route
+              path="/productDetails/:id"
+              element={
+                <Layout>
+                  <ProductDetails />
+                </Layout>
+              }
+            />
+            <Route
+              path="/contact"
+              element={
+                <Layout>
+                  <Contact />
+                </Layout>
+              }
+            />
+            <Route
+              path="/collections"
+              element={
+                <Layout>
+                  <Collections />
+                </Layout>
+              }
+            />
+            <Route
+              path="/collections/:slug"
+              element={
+                <Layout>
+                  <CollectionPage />
+                </Layout>
+              }
+            />
+            <Route
+              path="/policies/:slug"
+              element={
+                <Layout>
+                  <Policy />
+                </Layout>
+              }
+            />
+            {SHOP_OPEN && (
+              <>
+                <Route
+                  path="/cart"
+                  element={
+                    <Layout>
+                      <Cart />
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/checkout"
+                  element={
+                    <Layout checkout>
+                      <Checkout />
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/order/confirmation"
+                  element={
+                    <Layout checkout>
+                      <OrderConfirmation />
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/wishlist"
+                  element={
+                    <Layout>
+                      <Wishlist />
+                    </Layout>
+                  }
+                />
+              </>
+            )}
+            <Route
+              path="/admin/*"
+              element={
+                <Suspense fallback={<p style={{ padding: 32 }}>Loading…</p>}>
+                  <AdminApp />
+                </Suspense>
+              }
+            />
+            <Route
+              path="*"
+              element={
+                <Layout>
+                  <NotFound />
+                </Layout>
+              }
+            />
+          </Routes>
+        </WishlistProvider>
+      </CartProvider>
+    </Router>
+  </LazyMotion>
 );
 
 export default App;

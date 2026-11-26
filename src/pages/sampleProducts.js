@@ -4,6 +4,14 @@
 const d = (file) => `/demo/${file}`;
 
 export const demoHeroImage = d("hero.jpg");
+// one photo per home hero slide (see HERO_SLIDES in Home.js)
+export const demoHeroImages = {
+  welcome: d("hero.jpg"),
+  belts: d("belt-2.jpg"),
+  purses: d("purse-1.jpg"),
+  work: d("sleeve-1.jpg"),
+  weekend: d("washbag.jpg"),
+};
 export const demoContactImage = d("wallet-2.jpg");
 
 export const demoCategoryImages = {
