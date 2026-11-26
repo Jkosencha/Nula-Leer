@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ResponsiveContainer, AreaChart, Area, Tooltip } from "recharts";
+import { HeroSpark, StatusDonut, CategoryBars, DONUT_COLORS, useAdminDark } from "./charts";
 import {
   ArrowRight,
   PackageCheck,
@@ -77,20 +77,13 @@ const latestColumns = [
   { accessorKey: "status", header: "Status", cell: ({ getValue }) => <StatusBadge status={getValue()} /> },
 ];
 
-const SparkTip = ({ active, payload }) =>
-  active && payload?.length ? (
-    <div className="a-tip dark">
-      <span>{payload[0].payload.label}</span>
-      <b>{ksh(payload[0].payload.sales)}</b>
-    </div>
-  ) : null;
-
 const Overview = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState(null);
   const [products, setProducts] = useState([]);
   const [days, setDays] = useState(30);
   const { profile } = useProfile();
+  const dark = useAdminDark();
 
   useEffect(() => {
     listOrders().then(setOrders);
@@ -158,8 +151,6 @@ const Overview = () => {
   const awaiting = orders.filter((o) => o.status === "pending_payment");
   const lowStock = products.filter((p) => availability(p)?.soldOut || availability(p)?.low);
   const topMax = Math.max(1, ...stats.top.map((p) => p.sales));
-  const catMax = Math.max(1, ...stats.categories.map((c) => c.sales));
-  const catTotal = Math.max(1, stats.categories.reduce((s, c) => s + c.sales, 0));
   const productOf = (id) => products.find((p) => String(p.id) === String(id));
   const today = new Date().toLocaleDateString("en-KE", { weekday: "long", day: "numeric", month: "long" });
 
@@ -199,26 +190,7 @@ const Overview = () => {
               </span>
             </div>
             <div className="a-hero-spark" aria-hidden="true">
-              <ResponsiveContainer width="100%" height={120}>
-                <AreaChart data={stats.daily} margin={{ top: 8, right: 0, left: 0, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="heroFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#e6c88c" stopOpacity={0.45} />
-                      <stop offset="100%" stopColor="#e6c88c" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <Tooltip content={<SparkTip />} cursor={{ stroke: "rgba(230,200,140,.5)", strokeDasharray: "3 3" }} isAnimationActive={false} />
-                  <Area
-                    type="monotone"
-                    dataKey="sales"
-                    stroke="#e6c88c"
-                    strokeWidth={2}
-                    fill="url(#heroFill)"
-                    activeDot={{ r: 4, fill: "#e6c88c", stroke: "#2e1d12", strokeWidth: 2 }}
-                    isAnimationActive={false}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              <HeroSpark data={stats.daily} />
             </div>
           </div>
 
@@ -254,19 +226,21 @@ const Overview = () => {
               </div>
               <Link to="/admin/orders" className="a-link small">View all</Link>
             </div>
-            <div className="a-split" role="img" aria-label={stats.split.map((x) => `${x.label} ${x.count}`).join(", ")}>
-              {stats.split.filter((x) => x.count > 0).map((x) => (
-                <span key={x.key} className={`a-split-seg ${x.key}`} style={{ flexGrow: x.count }} />
-              ))}
+            <div className="a-donut-row">
+              <div className="a-donut" role="img" aria-label={stats.split.map((x) => `${x.label} ${x.count}`).join(", ")}>
+                <StatusDonut parts={stats.split} total={stats.placed} />
+              </div>
+              <ul className="a-donut-legend">
+                {stats.split.map((x, i) => (
+                  <li key={x.key}>
+                    <span className="a-donut-dot" style={{ background: (dark ? DONUT_COLORS.dark : DONUT_COLORS.light)[i] }} />
+                    <span className="a-donut-label">{x.label}</span>
+                    <span className="a-donut-value">{x.count}</span>
+                    <span className="a-donut-pct">{stats.placed ? Math.round((x.count / stats.placed) * 100) : 0}%</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <dl className="a-split-legend">
-              {stats.split.map((x) => (
-                <div key={x.key}>
-                  <dt><span className={`a-split-dot ${x.key}`} />{x.label}</dt>
-                  <dd>{x.count}</dd>
-                </div>
-              ))}
-            </dl>
           </section>
 
           <div className="a-mini-tiles">
@@ -370,19 +344,7 @@ const Overview = () => {
           {stats.categories.length === 0 ? (
             <p className="a-muted">No sales in this period.</p>
           ) : (
-            <ul className="a-meter-list">
-              {stats.categories.map((c) => (
-                <li key={c.slug}>
-                  <Link to={`/admin/products`}>
-                    <span className="a-meter-label">{categoryName(c.slug)}</span>
-                    <span className="a-meter-value">
-                      {ksh(c.sales)} <span className="a-muted small">· {Math.round((c.sales / catTotal) * 100)}%</span>
-                    </span>
-                    <span className="a-meter"><span style={{ width: `${(c.sales / catMax) * 100}%` }} /></span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <CategoryBars rows={stats.categories.map((c) => ({ label: categoryName(c.slug), sales: c.sales }))} />
           )}
         </section>
       </div>
