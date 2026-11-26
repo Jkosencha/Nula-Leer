@@ -771,3 +771,28 @@ html[data-admin-theme="dark"] .a-apex-tip,.a-hero .a-apex-tip{background:rgba(43
 html[data-admin-theme="dark"] .a-apex-tip b,.a-hero .a-apex-tip b{color:#faf0d5}
 html[data-admin-theme="dark"] .a-apex-tip small,.a-hero .a-apex-tip small{color:#b89878}
 @media(max-width:480px){.a-donut-row{grid-template-columns:1fr}.a-donut{max-width:220px;margin:0 auto}}
+
+/* ============================================================
+   Flat, outline-free cards: containers stand apart by fill alone,
+   with no borders or shadows. Form fields keep their outline so
+   it's clear where to type; sold-out product cards keep their warning edge.
+   ============================================================ */
+.admin :is(.a-card,.a-mini,.a-top,.a-rail,.a-spot,.a-pcard,.a-tabs,.a-promo,.a-hero,.a-view-toggle,
+  .a-search-trigger,.a-round-btn,.a-user-pill,.a-btn.ghost),
+.a-auth-card,.a-auth-brand{border-color:transparent;box-shadow:none}
+.admin :is(.a-mini-icon,.a-rank-n,.a-mono,.a-btn,.a-rail-nav a.active .a-rail-icon,.a-segment button[aria-pressed="true"]){box-shadow:none}
+.admin .a-pcard.alert{border-color:rgba(192,83,63,.5)}
+/* controls that lost their outline get a fill instead, so they still read as buttons */
+.admin :is(.a-search-trigger,.a-round-btn,.a-user-pill,.a-btn.ghost){background:var(--a-inner)}
+html[data-admin-theme="dark"] .admin :is(.a-search-trigger,.a-round-btn,.a-user-pill,.a-btn.ghost){background:rgba(250,240,213,.07)}
+
+/* leather header: a solid Walnut card, no stitching, no trend line (the Sales chart below has it) */
+.a-hero{background:#523828}
+.a-hero::after{display:none}
+.a-hero-body{grid-template-columns:1fr}
+.a-hero-figure{padding-bottom:22px}
+.a-hero-stats{background:rgba(31,22,16,.28);border-top-color:rgba(250,240,213,.14)}
+.a-hero-stats > div + div{border-left-color:rgba(250,240,213,.14)}
+html[data-admin-theme="dark"] .admin :is(.a-search-trigger,.a-round-btn,.a-user-pill,.a-btn.ghost){border-color:transparent}
+.a-promo::after{display:none}
+html[data-admin-theme="dark"] .admin .a-rail-nav a.active .a-rail-icon{box-shadow:none}
