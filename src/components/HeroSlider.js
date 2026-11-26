@@ -8,16 +8,20 @@ const DURATION = 6500; // ms each slide stays
 /*
   Full-width hero that cross-fades between photos, each with its own words.
   slides: [{ key, image, title, text, cta: { to, label }, cta2?: { to, label }, label }]
-  Pauses on hover and keyboard focus, has a pause button (WCAG 2.2.2), and doesn't
-  move by itself for people who ask their device to reduce motion.
+  Plays by itself, including under the mouse (the hero fills most of the screen,
+  so the cursor usually rests on it). It waits only while someone is using its
+  controls or buttons by keyboard, or while the tab is hidden, and has a pause button
+  (WCAG 2.2.2). With "reduce motion" on, slides still change but by a plain fade,
+  with no zoom or slide-up.
 */
 const HeroSlider = ({ slides }) => {
   const reduce = useReducedMotion();
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [hovering, setHovering] = useState(false);
+  const [paused, setPaused] = useState(false); // the pause button
+  const [busy, setBusy] = useState(false); // keyboard focus or pointer on the controls
+  const [hidden, setHidden] = useState(() => typeof document !== "undefined" && document.hidden);
   const timer = useRef(null);
-  const running = !paused && !hovering && !reduce && slides.length > 1;
+  const running = !paused && !busy && !hidden && slides.length > 1;
 
   const go = useCallback((i) => setIndex((i + slides.length) % slides.length), [slides.length]);
 
@@ -27,9 +31,9 @@ const HeroSlider = ({ slides }) => {
     return () => clearTimeout(timer.current);
   }, [index, running, go]);
 
-  // a hidden tab shouldn't race through the slides
+  // wait while the tab is hidden, and carry on when it's back
   useEffect(() => {
-    const onVis = () => setPaused((p) => (document.hidden ? true : p));
+    const onVis = () => setHidden(document.hidden);
     document.addEventListener("visibilitychange", onVis);
     return () => document.removeEventListener("visibilitychange", onVis);
   }, []);
@@ -41,10 +45,8 @@ const HeroSlider = ({ slides }) => {
       className="hero hero-slider"
       aria-roledescription="carousel"
       aria-label="Featured pieces"
-      onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => setHovering(false)}
-      onFocus={() => setHovering(true)}
-      onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && setHovering(false)}
+      onFocus={(e) => e.target.matches(":focus-visible") && setBusy(true)}
+      onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && setBusy(false)}
       onKeyDown={(e) => {
         if (e.key === "ArrowRight") go(index + 1);
         if (e.key === "ArrowLeft") go(index - 1);
@@ -63,9 +65,10 @@ const HeroSlider = ({ slides }) => {
           <m.div
             key={slide.key}
             className="hero-copy"
-            initial={reduce ? false : { opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.2, 0.8, 0.2, 1] } }}
-            exit={reduce ? { opacity: 0 } : { opacity: 0, y: -12, transition: { duration: 0.35 } }}
+            // reduce motion: a plain fade, no movement
+            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0, transition: { duration: reduce ? 0.5 : 0.7, ease: [0.2, 0.8, 0.2, 1] } }}
+            exit={reduce ? { opacity: 0, transition: { duration: 0.3 } } : { opacity: 0, y: -12, transition: { duration: 0.35 } }}
             role="group"
             aria-roledescription="slide"
             aria-label={`${index + 1} of ${slides.length}: ${slide.label}`}
@@ -87,7 +90,7 @@ const HeroSlider = ({ slides }) => {
       </div>
 
       {slides.length > 1 && (
-        <div className="wrap hs-controls">
+        <div className="wrap hs-controls" onMouseEnter={() => setBusy(true)} onMouseLeave={() => setBusy(false)}>
           <ol className="hs-dots">
             {slides.map((s, i) => (
               <li key={s.key}>
