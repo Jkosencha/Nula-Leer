@@ -22,7 +22,7 @@ const tone = (dark) => ({
   text: dark ? "#b89878" : "#6e5240",
   strong: dark ? "#faf0d5" : "#1f1610",
   grid: dark ? "rgba(250,240,213,.08)" : "rgba(82,56,40,.12)",
-  bg: dark ? "#2b1f17" : "#fdf8ec",
+  bg: dark ? "#2a1e16" : "#f1e4c9", // card colour, for the donut gaps and point rings
 });
 
 const short = (v) => (v >= 1000 ? `${Math.round(v / 100) / 10}K` : `${v}`);
@@ -56,10 +56,7 @@ export const SalesArea = ({ data, height = 280 }) => {
     chart: { ...base(dark).chart, type: "area", id: "sales" },
     colors: [t.line],
     stroke: { curve: "monotoneCubic", width: 2.5 },
-    fill: {
-      type: "gradient",
-      gradient: { type: "vertical", shadeIntensity: 0, opacityFrom: dark ? 0.45 : 0.42, opacityTo: 0.02, stops: [0, 100], colorStops: [] },
-    },
+    fill: { type: "solid", opacity: dark ? 0.16 : 0.14 }, // an even tint under the line, no fade
     markers: { size: 0, strokeWidth: 3, strokeColors: t.bg, hover: { size: 6 } },
     xaxis: {
       categories: data.map((d) => d.label),
@@ -87,7 +84,7 @@ export const HeroSpark = ({ data, height = 120 }) => {
     chart: { type: "area", sparkline: { enabled: true }, background: "transparent", animations: { enabled: true, speed: 800 } },
     colors: ["#e3cfb3"],
     stroke: { curve: "monotoneCubic", width: 2 },
-    fill: { type: "gradient", gradient: { shadeIntensity: 1, opacityFrom: 0.5, opacityTo: 0, stops: [0, 100] } },
+    fill: { type: "solid", opacity: 0.16 },
     markers: { size: 0, strokeColors: "#1f1610", strokeWidth: 2, hover: { size: 5 } },
     tooltip: {
       custom: ({ dataPointIndex }) => tipBox(data[dataPointIndex].label, ksh(data[dataPointIndex].sales)),
