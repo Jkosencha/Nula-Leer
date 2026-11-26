@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { HeroSpark, StatusDonut, CategoryBars, DONUT_COLORS, useAdminDark } from "./charts";
+import { StatusDonut, CategoryBars, DONUT_COLORS, useAdminDark } from "./charts";
 import {
   ArrowRight,
   PackageCheck,
@@ -188,9 +188,6 @@ const Overview = () => {
               <span className="a-hero-delta">
                 <Delta now={stats.sales} before={stats.salesBefore} /> on the previous {days} days
               </span>
-            </div>
-            <div className="a-hero-spark" aria-hidden="true">
-              <HeroSpark data={stats.daily} />
             </div>
           </div>
 

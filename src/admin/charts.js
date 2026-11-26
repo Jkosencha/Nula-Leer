@@ -78,21 +78,6 @@ export const SalesArea = ({ data, height = 280 }) => {
   return <Chart type="area" height={height} options={options} series={[{ name: "Sales", data: data.map((d) => d.sales) }]} />;
 };
 
-/* Small trend line for the leather header (always on dark leather). */
-export const HeroSpark = ({ data, height = 120 }) => {
-  const options = {
-    chart: { type: "area", sparkline: { enabled: true }, background: "transparent", animations: { enabled: true, speed: 800 } },
-    colors: ["#e3cfb3"],
-    stroke: { curve: "monotoneCubic", width: 2 },
-    fill: { type: "solid", opacity: 0.16 },
-    markers: { size: 0, strokeColors: "#1f1610", strokeWidth: 2, hover: { size: 5 } },
-    tooltip: {
-      custom: ({ dataPointIndex }) => tipBox(data[dataPointIndex].label, ksh(data[dataPointIndex].sales)),
-    },
-  };
-  return <Chart type="area" height={height} options={options} series={[{ name: "Sales", data: data.map((d) => d.sales) }]} />;
-};
-
 // stage colours, darkest first; the legend beside the donut uses the same order
 export const DONUT_COLORS = { light: ["#1f1610", "#936d4b", "#c8a585", "#e6d4b0"], dark: ["#faf0d5", "#c8a585", "#936d4b", "#5c4535"] };
 
