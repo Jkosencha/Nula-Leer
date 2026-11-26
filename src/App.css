@@ -191,8 +191,7 @@ main:focus{outline:none}
 /* ============================== HERO ============================== */
 .hero{position:relative;color:var(--cream);background:var(--choc) var(--leather) center/cover;overflow:hidden}
 .hero::before{content:"";position:absolute;inset:0;
-  background:linear-gradient(0deg,rgba(31,22,16,.8) 0%,transparent 32%),
-    linear-gradient(90deg,rgba(31,22,16,.88) 0%,rgba(31,22,16,.55) 55%,rgba(31,22,16,.2) 100%)}
+  background:rgba(31,22,16,.62)} /* one even tint so the words read on any photo */
 .hero-grid{position:relative;display:flex;align-items:center;
   min-height:min(80vh,660px);padding-top:72px;padding-bottom:72px}
 .hero h1{font-size:clamp(2.8rem,6vw,5.2rem);max-width:680px}
@@ -254,7 +253,7 @@ a:hover .leather-panel .cat-art{transform:translate(-50%,-50%) scale(1.05)}
   opacity:0;transform:translateY(8px);transition:opacity .3s,transform .35s cubic-bezier(.2,.8,.2,1)}
 .type-tile:hover::before,.type-tile:focus-visible::before{opacity:1}
 /* photos: keep a soft shade at the bottom so the name stays readable */
-.type-tile.has-img::before{background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.6));opacity:.85}
+.type-tile.has-img::before{background:rgba(31,22,16,.38);opacity:1}
 .type-tile.has-img:hover::before{opacity:1}
 .type-tile:hover::after{border-color:rgba(200,165,133,.85)}
 .type-tile:hover .cat-art{transform:translate(-50%,-56%) scale(1.04)}
@@ -463,7 +462,7 @@ input,select,textarea{font:inherit;color:var(--ink)}
   background:var(--choc);color:#fff}
 .shop-banner-art{position:absolute;inset:0;z-index:-1}
 .shop-banner-art::after{content:"";position:absolute;inset:0;z-index:1;
-  background:linear-gradient(90deg,rgba(20,12,8,.72) 0%,rgba(20,12,8,.4) 50%,rgba(20,12,8,.15) 100%)}
+  background:rgba(31,22,16,.55)}
 .banner-slide{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease}
 .banner-slide.on{opacity:1}
 .banner-slide .leather-panel{width:100%;height:100%;aspect-ratio:auto}
@@ -536,15 +535,11 @@ input,select,textarea{font:inherit;color:var(--ink)}
   display:inline-flex;align-items:center;justify-content:center}
 .pager button.on{background:var(--ink);border-color:var(--ink);color:#fff}
 .pager button:disabled{opacity:.4;cursor:default}
-/* coming soon: blurred leather-tone backdrop, script "Coming" over a faded "Soon" */
+/* coming soon: flat leather-tone panel, script "Coming" over a faded "Soon" */
 .soon{position:relative;isolation:isolate;overflow:hidden;margin-top:8px;border-radius:0;min-height:540px;
   padding:72px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
   background:var(--tone,#7c4a2a);color:var(--cream)}
-.soon-bg{position:absolute;inset:-15%;z-index:-1;filter:blur(40px);
-  background:radial-gradient(circle at 28% 30%,rgba(255,236,210,.42),transparent 42%),
-    radial-gradient(circle at 72% 24%,rgba(255,214,170,.28),transparent 38%),
-    radial-gradient(circle at 60% 78%,rgba(20,10,4,.45),transparent 48%),
-    radial-gradient(circle at 15% 85%,rgba(20,10,4,.3),transparent 40%)}
+.soon-bg{display:none} /* was a blurred glow; the panel is now a flat leather tone */
 .soon-title{position:relative;display:grid;place-items:center;margin:0 0 18px;font-weight:400}
 .soon-big{font-family:var(--serif);font-weight:500;font-size:clamp(6rem,17vw,12.5rem);line-height:.85;
   letter-spacing:.06em;text-transform:uppercase;color:rgba(255,246,232,.32)}
