@@ -5,16 +5,57 @@ import products, { categories, collections } from "./Products";
 import ProductCard from "../components/ProductCard";
 import CategoryArt from "../components/CategoryArt";
 import LeatherPanel from "../components/LeatherPanel";
-import { SHOP_OPEN, DEMO } from "../config";
-import { demoHeroImage } from "./sampleProducts";
+import HeroSlider from "../components/HeroSlider";
+import Reveal from "../components/Reveal";
+import { DEMO } from "../config";
+import { demoHeroImages } from "./sampleProducts";
 import usePageTitle from "../usePageTitle";
 
-// short points along the bottom edge of the hero
-const POINTS = [
-  { title: "Handmade in Nairobi", text: "Cut and stitched by hand" },
-  { title: "Locally sourced", text: "Quality leather from Kenya" },
-  { title: "Custom orders", text: "Made to your request" },
-  ...(SHOP_OPEN ? [{ title: "Delivery across Kenya", text: "Fees shown at checkout" }] : []),
+// Home hero: one photo and message per slide. Swap the demo photos for your own
+// by adding image: "/hero/belts.jpg" (file in public/hero/) to each slide.
+const img = (key) => (DEMO ? demoHeroImages[key] : undefined);
+const HERO_SLIDES = [
+  {
+    key: "welcome",
+    label: "Handmade",
+    image: img("welcome"),
+    title: "Leather goods, made by hand to be carried every day.",
+    text: "Cut and stitched in Nairobi from locally sourced leather.",
+    cta: { to: "/shop", label: "Explore the collection" },
+    cta2: { to: "/contact", label: "Custom orders" },
+  },
+  {
+    key: "belts",
+    label: "Belts",
+    image: img("belts"),
+    title: "Belts that soften and age with you.",
+    text: "Full-grain leather and solid buckles, made to be worn for years.",
+    cta: { to: "/shop?category=belts", label: "Shop belts" },
+  },
+  {
+    key: "purses",
+    label: "Purses",
+    image: img("purses"),
+    title: "Room for the essentials, and then some.",
+    text: "Totes and purses that carry the day and look better for it.",
+    cta: { to: "/shop?category=purses", label: "Shop purses" },
+  },
+  {
+    key: "work",
+    label: "Workday",
+    image: img("work"),
+    title: "Carry your work in leather.",
+    text: "Laptop sleeves and card holders for the commute and the boardroom.",
+    cta: { to: "/collections/workday", label: "See the Workday collection" },
+  },
+  {
+    key: "weekend",
+    label: "Weekender",
+    image: img("weekend"),
+    title: "Packed for two nights away.",
+    text: "Wash bags and small leather goods for weekends upcountry.",
+    cta: { to: "/collections/weekender", label: "See the Weekender collection" },
+  },
 ];
 
 const CRAFT = [
@@ -28,51 +69,29 @@ const Home = () => {
   usePageTitle();
   return (
     <>
-      <section className="hero" style={DEMO ? { backgroundImage: `url(${demoHeroImage})` } : undefined}>
-        <div className="wrap hero-grid">
-          <div className="hero-copy">
-            <h1>Leather goods, made by hand to be carried every day.</h1>
-            <p className="hero-lead">
-              Belts, wallets, purses, laptop sleeves, wash bags and key holders, cut and
-              stitched by hand from locally sourced leather.
-            </p>
-            <div className="hero-ctas">
-              <Link to="/shop" className="btn gold">Explore the collection</Link>
-              <Link to="/contact" className="btn ghost-light">Custom orders</Link>
-            </div>
-          </div>
-        </div>
-        <ul className="wrap hero-points">
-          {POINTS.map((pt) => (
-            <li key={pt.title}>
-              <strong>{pt.title}</strong>
-              <span>{pt.text}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <HeroSlider slides={HERO_SLIDES} />
 
       <section className="section wrap">
-        <div className="section-head center">
+        <Reveal className="section-head center">
           <div>
             <h2 className="display">Shop by type</h2>
           </div>
-        </div>
-        <div className="type-grid">
+        </Reveal>
+        <Reveal stagger className="type-grid">
           {categories.map((c) => (
-            <Link key={c.slug} to={`/shop?category=${c.slug}`} className={`type-tile ${c.image ? "has-img" : ""}`} style={{ "--tone": c.tone }}>
+            <Reveal.Item as={Link} key={c.slug} to={`/shop?category=${c.slug}`} className={`type-tile ${c.image ? "has-img" : ""}`} style={{ "--tone": c.tone }}>
               {c.image ? <img src={c.image} alt="" loading="lazy" decoding="async" /> : <CategoryArt slug={c.slug} />}
               <span className="type-label">
                 <span className="type-name">{c.name}</span>
                 <span className="type-cta">Shop now <FiArrowRight /></span>
               </span>
-            </Link>
+            </Reveal.Item>
           ))}
-        </div>
+        </Reveal>
       </section>
 
       <section className="section wrap">
-        <div className="coll-panel">
+        <Reveal className="coll-panel">
           <div className="coll-panel-text">
             <h2 className="display">Our collections</h2>
             <p className="muted">
@@ -92,44 +111,46 @@ const Home = () => {
               </Link>
             ))}
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {products.length > 0 && (
         <section className="section wrap">
-          <div className="section-head">
+          <Reveal className="section-head">
             <h2 className="display">New in</h2>
             <Link to="/shop" className="text-link">View all <FiArrowRight /></Link>
-          </div>
-          <div className="prod-grid four">
+          </Reveal>
+          <Reveal stagger className="prod-grid four">
             {products.slice(0, 4).map((p) => (
-              <ProductCard key={p.id} product={p} />
+              <Reveal.Item key={p.id}>
+                <ProductCard product={p} />
+              </Reveal.Item>
             ))}
-          </div>
+          </Reveal>
         </section>
       )}
 
       <section className="craft">
         <div className="wrap">
-          <div className="section-head">
+          <Reveal className="section-head">
             <div>
               <h2 className="display">From hide to your hands</h2>
             </div>
-          </div>
-          <ol className="craft-steps">
+          </Reveal>
+          <Reveal as="ol" stagger className="craft-steps">
             {CRAFT.map((step, i) => (
-              <li key={step.title}>
+              <Reveal.Item as="li" key={step.title}>
                 <span className="num">{String(i + 1).padStart(2, "0")}</span>
                 <h3>{step.title}</h3>
                 <p>{step.text}</p>
-              </li>
+              </Reveal.Item>
             ))}
-          </ol>
+          </Reveal>
         </div>
       </section>
 
       <section className="section wrap founder-quote">
-        <div>
+        <Reveal>
           <blockquote>
             “Luxury doesn't have to shout. It whispers through quality and intention.”
           </blockquote>
@@ -139,7 +160,7 @@ const Home = () => {
           </p>
           <p className="sig">Jennifer Kosencha, Founder</p>
           <Link to="/about" className="text-link">Read our story <FiArrowRight /></Link>
-        </div>
+        </Reveal>
       </section>
 
       {products.length === 0 && (
